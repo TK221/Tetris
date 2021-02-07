@@ -29,7 +29,6 @@ int main()
         }
 
         window.clear();
-        window.draw(tiles);
         tiles.move(0, 10);
         window.draw(tiles);
         window.display();
