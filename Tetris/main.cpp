@@ -2,7 +2,7 @@
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(300, 300), "SFML works!");
+    sf::RenderWindow window(sf::VideoMode(320, 480), "Tetris");
     sf::CircleShape shape(100.f);
     shape.setFillColor(sf::Color::Green);
 
