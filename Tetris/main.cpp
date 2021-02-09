@@ -1,4 +1,6 @@
 #include <SFML/Graphics.hpp>
+#include <windows.h>
+#include "blocks.h"
 using namespace sf;
 
 const unsigned int X = 14;
@@ -16,8 +18,11 @@ int main()
         printf("Didnt find tile sprite!");
     }
 
-    Sprite tiles(t1);
-    tiles.setTextureRect(IntRect(0, 0, 23, 23));
+    Sprite tile1(t1), tile2(t1);
+    tile1.setTextureRect(IntRect(0, 0, 32, 32));
+    tile2.setTextureRect(IntRect(32, 0, 32, 32));
+
+    readBlocks();
 
     while (window.isOpen())
     {
@@ -29,8 +34,11 @@ int main()
         }
 
         window.clear();
-        tiles.move(0, 10);
-        window.draw(tiles);
+        window.draw(tile1);
+        tile1.move(0, 10);
+        window.draw(tile2);
+        tile2.move(0, 12);
+        Sleep(1000);
         window.display();
     }
 
