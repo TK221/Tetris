@@ -8,6 +8,7 @@ void printFieldToConsole();
 void drawField();
 bool newBlock();
 void clearField();
+int moveBlockOneDown();
 
 //variables
 const unsigned int X = 14;
@@ -16,44 +17,47 @@ const unsigned int SquareSize = 23;
 
 int block[7][4][4] =
 {
-    1,0,0,0,
+    1,0,0,0,    
     1,0,0,0,
     1,0,0,0,
     1,0,0,0,
 
-    1,0,0,0,
-    1,1,0,0,
-    0,1,0,0,
+    2,0,0,0,
+    2,2,0,0,
+    0,2,0,0,
     0,0,0,0,
 
-    0,1,0,0,
-    1,1,0,0,
-    1,0,0,0,
+    0,3,0,0,
+    3,3,0,0,
+    3,0,0,0,
     0,0,0,0,
 
-    1,1,0,0,
-    1,1,0,0,
+    0,4,0,0,
+    0,4,0,0,
+    4,4,0,0,
+    0,0,0,0,
+
+    5,5,0,0,
+    5,5,0,0,
     0,0,0,0,
     0,0,0,0,
 
-    1,0,0,0,
-    1,1,0,0,
-    1,0,0,0,
+    6,0,0,0,
+    6,6,0,0,
+    6,0,0,0,
     0,0,0,0,
 
-    1,0,0,0,
-    1,0,0,0,
-    1,1,0,0,
-    0,0,0,0,
-
-    0,1,0,0,
-    0,1,0,0,
-    1,1,0,0,
+    7,0,0,0,
+    7,0,0,0,
+    7,7,0,0,
     0,0,0,0,
 };
 
 int field[X][Y] = { 0 };
 int currentObjectPosition[4][2] = { 0 };    //[one of the 4 blocks of one "total block"][X and Y]
+int currentBlockType = 0;
+int currentBlockPosX;
+int currentBlockPosY;
 
 int main()
 {
@@ -68,6 +72,8 @@ int main()
     Sprite tiles(t1);
     tiles.setTextureRect(IntRect(0, 0, SquareSize, SquareSize));
 
+    newBlock();
+
     while (window.isOpen())
     {
         sf::Event event;
@@ -79,12 +85,13 @@ int main()
 
         window.clear();
         Sleep(1000);
-       
-        clearField();
-        if (!newBlock()) {
-            printf("error\n");
-        }
+        
+       // clearField();
+        //if (!newBlock()) {
+          //  printf("error\n");
+        //}
         printFieldToConsole();
+        moveBlockOneDown();
         tiles.move(0, SquareSize);
         window.draw(tiles);
         window.display();
@@ -101,19 +108,37 @@ void clearField() {
     }
 }
 
-bool newBlock() {   //returns false if collision
-    int type = rand() % 7;
+int moveBlockOneDown() {
     
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 4; j++) {
-            if (block[type][i][j] == 1) {
-                if (field[i][j + (X / 2)] == 0) {
-                    field[i][j + (X / 2)] = 1;
+    for (int i = 3; i >= 0; i--) {
+        for (int j = 3; j >= 0; j--) {
+            if (block[currentBlockType][i][j] != 0) {
+                if (field[currentBlockPosX + i][currentBlockPosY + j + 1] == 0) {
+                    field[currentBlockPosX + i][currentBlockPosY + j + 1] = block[currentBlockType][i][j];
+                    field[currentBlockPosX + i][currentBlockPosY + j] = 0;
                 }
                 else return false;
             }
         }
     }
+    currentBlockPosY++;
+}
+
+bool newBlock() {   //returns false if collision
+    currentBlockType = rand() % 7;
+    
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            if (block[currentBlockType][i][j] != 0) {
+                if (field[i][j + (X / 2)] == 0) {
+                    field[i][j + (X / 2)] = block[currentBlockType][i][j];
+                }
+                else return false;
+            }
+        }
+    }
+    currentBlockPosX = X / 2;
+    currentBlockPosY = 0;
     return true;
 }
 
