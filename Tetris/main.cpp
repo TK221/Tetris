@@ -2,6 +2,7 @@
 #include <Windows.h>
 
 using namespace sf;
+using namespace std;
 
 //functions
 void printFieldToConsole();
@@ -73,6 +74,8 @@ int main()
     tiles.setTextureRect(IntRect(0, 0, SquareSize, SquareSize));
 
     newBlock();
+    printFieldToConsole();
+    clearField();
 
     while (window.isOpen())
     {
@@ -90,8 +93,11 @@ int main()
         //if (!newBlock()) {
         //    printf("error\n");
         //}
+        if (!moveBlockOneDown()) {
+            newBlock();
+        }
         printFieldToConsole();
-        moveBlockOneDown();
+        ;
         tiles.move(0, SquareSize);
         window.draw(tiles);
         window.display();
@@ -103,13 +109,19 @@ int main()
 void clearField() {
     for (int i = 0; i < Y; i++) {
         for (int j = 0; j < X; j++) {
-            field[j][i] = 0;
+            if (i == Y - 1) {
+                field[j][i] = -1;
+            }
+            else {
+                field[j][i] = 0;
+            }
         }
     }
 }
 
 int moveBlockOneDown() {
-    
+    int tmpField[X][Y];
+    std::copy(&field[0][0], &field[0][0] + X * Y, &tmpField[0][0]);
     for (int i = 3; i >= 0; i--) {
         for (int j = 3; j >= 0; j--) {
             if (block[currentBlockType][i][j] != 0) {
@@ -117,7 +129,10 @@ int moveBlockOneDown() {
                     field[currentBlockPosX + j][currentBlockPosY + i + 1] = block[currentBlockType][i][j];
                     field[currentBlockPosX + j][currentBlockPosY + i] = 0;
                 }
-                //else return false;
+                else {
+                    std::copy(&tmpField[0][0], &tmpField[0][0] + X * Y, &field[0][0]);
+                    return false;
+                }
             }
         }
     }
