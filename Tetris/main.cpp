@@ -10,6 +10,8 @@ void drawField();
 bool newBlock();
 void clearField();
 int moveBlockOneDown();
+int moveBlockOneLeft();
+int moveBlockOneRight();
 
 //variables
 const unsigned int X = 14;
@@ -87,17 +89,29 @@ int main()
         }
 
         window.clear();
-        Sleep(1000);
-        
-        //clearField();
-        //if (!newBlock()) {
-        //    printf("error\n");
+        Sleep(100);
+
+        //int t = GetAsyncKeyState(0x41);
+        //printf("%d", t);
+
+
+        //if ((GetAsyncKeyState(VK_ESCAPE) & 0x01))
+        //{
+        //    printf("adsfasfd");
         //}
+        
+
+        //clearField();
+        
         if (!moveBlockOneDown()) {
-            newBlock();
+            if (!newBlock()) {
+                printf("\ngame over!\n\n");
+            }
         }
+        moveBlockOneRight();
+        //moveBlockOneLeft();
         printFieldToConsole();
-        ;
+        
         tiles.move(0, SquareSize);
         window.draw(tiles);
         window.display();
@@ -109,7 +123,7 @@ int main()
 void clearField() {
     for (int i = 0; i < Y; i++) {
         for (int j = 0; j < X; j++) {
-            if (i == Y - 1) {
+            if (i == Y - 1 || j == 0 || j == X-1) {
                 field[j][i] = -1;
             }
             else {
@@ -137,6 +151,48 @@ int moveBlockOneDown() {
         }
     }
     currentBlockPosY++;
+    return true;
+}
+
+int moveBlockOneLeft() {
+    int tmpField[X][Y];
+    std::copy(&field[0][0], &field[0][0] + X * Y, &tmpField[0][0]);
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            if (block[currentBlockType][i][j] != 0) {
+                if (field[currentBlockPosX + j - 1][currentBlockPosY + i] == 0) {
+                    field[currentBlockPosX + j - 1][currentBlockPosY + i] = block[currentBlockType][i][j];
+                    field[currentBlockPosX + j][currentBlockPosY + i] = 0;
+                }
+                else {
+                    std::copy(&tmpField[0][0], &tmpField[0][0] + X * Y, &field[0][0]);
+                    return false;
+                }
+            }
+        }
+    }
+    currentBlockPosX--;
+    return true;
+}
+
+int moveBlockOneRight() {
+    int tmpField[X][Y];
+    std::copy(&field[0][0], &field[0][0] + X * Y, &tmpField[0][0]);
+    for (int i = 3; i >= 0; i--) {
+        for (int j = 3; j >= 0; j--) {
+            if (block[currentBlockType][i][j] != 0) {
+                if (field[currentBlockPosX + j + 1][currentBlockPosY + i] == 0) {
+                    field[currentBlockPosX + j + 1][currentBlockPosY + i] = block[currentBlockType][i][j];
+                    field[currentBlockPosX + j][currentBlockPosY + i] = 0;
+                }
+                else {
+                    std::copy(&tmpField[0][0], &tmpField[0][0] + X * Y, &field[0][0]);
+                    return false;
+                }
+            }
+        }
+    }
+    currentBlockPosX++;
     return true;
 }
 
