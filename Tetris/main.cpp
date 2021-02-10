@@ -86,9 +86,9 @@ int main()
         window.clear();
         Sleep(1000);
         
-       // clearField();
+        //clearField();
         //if (!newBlock()) {
-          //  printf("error\n");
+        //    printf("error\n");
         //}
         printFieldToConsole();
         moveBlockOneDown();
@@ -101,9 +101,9 @@ int main()
 }
 
 void clearField() {
-    for (int i = 0; i < X; i++) {
-        for (int j = 0; j < Y; j++) {
-            field[i][j] = 0;
+    for (int i = 0; i < Y; i++) {
+        for (int j = 0; j < X; j++) {
+            field[j][i] = 0;
         }
     }
 }
@@ -113,25 +113,26 @@ int moveBlockOneDown() {
     for (int i = 3; i >= 0; i--) {
         for (int j = 3; j >= 0; j--) {
             if (block[currentBlockType][i][j] != 0) {
-                if (field[currentBlockPosX + i][currentBlockPosY + j + 1] == 0) {
-                    field[currentBlockPosX + i][currentBlockPosY + j + 1] = block[currentBlockType][i][j];
-                    field[currentBlockPosX + i][currentBlockPosY + j] = 0;
+                if (field[currentBlockPosX + j][currentBlockPosY + i + 1] == 0) {
+                    field[currentBlockPosX + j][currentBlockPosY + i + 1] = block[currentBlockType][i][j];
+                    field[currentBlockPosX + j][currentBlockPosY + i] = 0;
                 }
-                else return false;
+                //else return false;
             }
         }
     }
     currentBlockPosY++;
+    return true;
 }
 
 bool newBlock() {   //returns false if collision
     currentBlockType = rand() % 7;
     
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 4; j++) {
+    for (int j = 0; j < 4; j++) {
+        for (int i = 0; i < 4; i++) {
             if (block[currentBlockType][i][j] != 0) {
-                if (field[i][j + (X / 2)] == 0) {
-                    field[i][j + (X / 2)] = block[currentBlockType][i][j];
+                if (field[j + (X / 2)][i] == 0) {
+                    field[j + (X / 2)][i] = block[currentBlockType][i][j];
                 }
                 else return false;
             }
@@ -143,9 +144,9 @@ bool newBlock() {   //returns false if collision
 }
 
 void printFieldToConsole() {
-    for (int i = 0; i < X; i++) {
-        for (int j = 0; j < Y; j++) {
-            printf("%i", field[i][j]);
+    for (int i = 0; i < Y; i++) {
+        for (int j = 0; j < X; j++) {
+            printf("%i", field[j][i]);
         }
         printf("\n");
     }
