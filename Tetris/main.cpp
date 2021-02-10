@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include <stdlib.h> 
 #include <Windows.h>
 
 using namespace sf;
@@ -93,19 +94,18 @@ int main()
 
         //int t = GetAsyncKeyState(0x41);
         //printf("%d", t);
-
-
+        //
+        //
         //if ((GetAsyncKeyState(VK_ESCAPE) & 0x01))
         //{
         //    printf("adsfasfd");
         //}
         
-
-        //clearField();
         
         if (!moveBlockOneDown()) {
             if (!newBlock()) {
                 printf("\ngame over!\n\n");
+                return 0;
             }
         }
         moveBlockOneRight();
@@ -197,7 +197,10 @@ int moveBlockOneRight() {
 }
 
 bool newBlock() {   //returns false if collision
+    srand(time(NULL));
     currentBlockType = rand() % 7;
+    int tmpField[X][Y];
+    std::copy(&field[0][0], &field[0][0] + X * Y, &tmpField[0][0]);
     
     for (int j = 0; j < 4; j++) {
         for (int i = 0; i < 4; i++) {
@@ -205,7 +208,10 @@ bool newBlock() {   //returns false if collision
                 if (field[j + (X / 2)][i] == 0) {
                     field[j + (X / 2)][i] = block[currentBlockType][i][j];
                 }
-                else return false;
+                else {
+                    std::copy(&tmpField[0][0], &tmpField[0][0] + X * Y, &field[0][0]);
+                    return false;
+                }
             }
         }
     }
