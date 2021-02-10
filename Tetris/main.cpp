@@ -3,8 +3,11 @@
 #include "blocks.h"
 using namespace sf;
 
+
 const unsigned int X = 14;
 const unsigned int Y = 20;
+
+Sprite bT, rT, yT, gT, cT, pT, oT, bT;
 
 int field[X][Y] = { 0 };
 
@@ -15,7 +18,7 @@ int main()
     Texture t1;
     if (!t1.loadFromFile("../Assets/Tiles.png"))
     {
-        printf("Didnt find tile sprite!");
+        printf("Didnt find tile texture!");
     }
 
     Sprite tile1(t1), tile2(t1);
