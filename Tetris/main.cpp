@@ -1,8 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include <windows.h>
-#include <time.h>
 #include "blocks.h"
-#include "visualizer.h"
 using namespace sf;
 
 
@@ -13,15 +11,28 @@ int field[X][Y] = { 0 };
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(320, 480), "Tetris");
+    sf::RenderWindow window(sf::VideoMode(610, 640), "Tetris");
     
     Texture t1;
     Sprite blockTiles[8];
+
+    Font font;
+    Text text;
 
     if (!(t1).loadFromFile("../Assets/Tiles.png"))
     {
         printf("Didnt find tile texture!");
     }
+    if (!font.loadFromFile("../Assets/Righteous.ttf"))
+    {
+        printf("Couldn't load the font!");
+    }
+
+    text.setFont(font);
+    text.setString("Score: 0000");
+    text.setCharacterSize(24);
+    text.setFillColor(Color::White);
+    text.setPosition(460, 0);
 
     for (int i = 0; i < 8; i++)
     {
@@ -29,37 +40,32 @@ int main()
         blockTiles[i].setTextureRect(sf::IntRect((32 * i), 0, 32, 32));
     }
 
-    float timer = 0, delay = 0.1;
-    Clock clock;
-
     while (window.isOpen())
     {
-        float time = clock.getElapsedTime().asSeconds();
-        clock.restart();
-        timer += time;
-
         sf::Event event;
         while (window.pollEvent(event))
         {
             if (event.type == sf::Event::Closed)
                 window.close();
         }
-
-        if (time > delay)
-        {
-            blockTiles[0].move(0, 10);
-            blockTiles[0].move(0, 12);
-            time = 0;
-        }
+        
         window.clear();
-        window.draw(blockTiles[0]);
+        
+        for (int y = 0; y < Y; y++)
+        {
+            for (int x = 0; x < X; x++)
+            {
+                int blockType = ((x+1)*(y+1))%8;
+                if (blockType == -1) continue;
+
+                blockTiles[blockType].setPosition(x*32,y*32);
+                
+                window.draw(blockTiles[blockType]);
+            }
+        }
+        window.draw(text);
         window.display();
     }
 
     return 0;
-}
-
-void drawField()
-{
-
 }
