@@ -4,16 +4,22 @@ using namespace std;
 
 void saveBlockTypes(int block[4][4], int type);
 
+const int BLOCKNUMBER = 7;
 
 // indexes where the real blocks of every type of block is
-int blockTypes[7][4][4];
+int blockTypes[BLOCKNUMBER][4][4];
 
 // definition of normal block
-int blockDef[3][4][4] =
+int blockDef[BLOCKNUMBER][4][4] =
 {
 	0,1,1,0,
 	0,1,0,0,
 	0,1,0,0,
+	0,0,0,0,
+
+	0,1,1,0,
+	0,0,1,0,
+	0,0,1,0,
 	0,0,0,0,
 
 	0,1,0,0,
@@ -25,12 +31,27 @@ int blockDef[3][4][4] =
 	0,0,1,1,
 	0,0,0,0,
 	0,0,0,0,
+
+	0,0,0,0,
+	0,1,1,0,
+	0,1,1,0,
+	0,0,0,0,
+	
+	0,0,0,0,
+	0,1,0,0,
+	1,1,1,0,
+	0,0,0,0,
+
+	0,0,1,1,
+	0,1,1,0,
+	0,0,0,0,
+	0,0,0,0,
 };
 
 // read the block-definitions and call the save function
 void readBlocks()
 {
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < BLOCKNUMBER; i++)
 	{
 		saveBlockTypes(blockDef[i], i);
 	}

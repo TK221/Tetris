@@ -4,41 +4,29 @@
 using namespace sf;
 
 
+void loadTextures();
+void addScore(int value);
+
 const unsigned int X = 14;
 const unsigned int Y = 20;
+
+
+Texture t1;
+Sprite blockTiles[8];
+Font font;
+Text text;
+
+int score = 0;
+
 
 int field[X][Y] = { 0 };
 
 int main()
 {
     sf::RenderWindow window(sf::VideoMode(610, 640), "Tetris");
-    
-    Texture t1;
-    Sprite blockTiles[8];
 
-    Font font;
-    Text text;
+    loadTextures();
 
-    if (!(t1).loadFromFile("../Assets/Tiles.png"))
-    {
-        printf("Didnt find tile texture!");
-    }
-    if (!font.loadFromFile("../Assets/Righteous.ttf"))
-    {
-        printf("Couldn't load the font!");
-    }
-
-    text.setFont(font);
-    text.setString("Score: 0000");
-    text.setCharacterSize(24);
-    text.setFillColor(Color::White);
-    text.setPosition(460, 0);
-
-    for (int i = 0; i < 8; i++)
-    {
-        blockTiles[i].setTexture(t1);
-        blockTiles[i].setTextureRect(sf::IntRect((32 * i), 0, 32, 32));
-    }
 
     while (window.isOpen())
     {
@@ -68,4 +56,37 @@ int main()
     }
 
     return 0;
+}
+
+void loadTextures()
+{
+    // load textures
+    if (!(t1).loadFromFile("../Assets/Tiles.png"))
+    {
+        printf("Didnt find tile texture!");
+    }
+    if (!font.loadFromFile("../Assets/Righteous.ttf"))
+    {
+        printf("Couldn't load the font!");
+    }
+
+    // set tile sprites
+    for (int i = 0; i < 8; i++)
+    {
+        blockTiles[i].setTexture(t1);
+        blockTiles[i].setTextureRect(sf::IntRect((32 * i), 0, 32, 32));
+    }
+
+    // define score text
+    text.setFont(font);
+    text.setString("Score: 0000");
+    text.setCharacterSize(24);
+    text.setFillColor(Color::White);
+    text.setPosition(460, 0);
+}
+
+// add points to score
+void addScore(int value)
+{
+    score += value;
 }
