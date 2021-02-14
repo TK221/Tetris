@@ -15,6 +15,10 @@ int moveBlockOneLeft();
 int moveBlockOneRight();
 
 //variables
+
+void loadTextures();
+void addScore(int value);
+
 const unsigned int X = 14;
 const unsigned int Y = 20;
 const unsigned int SquareSize = 23;
@@ -57,6 +61,15 @@ int block[7][4][4] =
     0,0,0,0,
 };
 
+
+Texture t1;
+Sprite blockTiles[8];
+Font font;
+Text text;
+
+int score = 0;
+
+
 int field[X][Y] = { 0 };
 int currentObjectPosition[4][2] = { 0 };    //[one of the 4 blocks of one "total block"][X and Y]
 int currentBlockType = 0;
@@ -65,13 +78,9 @@ int currentBlockPosY;
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(320, 480), "Tetris");
-    
-    Texture t1;
-    if (!t1.loadFromFile("../Assets/Tiles.png"))
-    {
-        printf("Didnt find tile sprite!");
-    }
+    sf::RenderWindow window(sf::VideoMode(610, 640), "Tetris");
+
+    loadTextures();
 
     Sprite tiles(t1);
     tiles.setTextureRect(IntRect(0, 0, SquareSize, SquareSize));
@@ -88,7 +97,7 @@ int main()
             if (event.type == sf::Event::Closed)
                 window.close();
         }
-
+        
         window.clear();
         Sleep(100);
 
@@ -114,6 +123,20 @@ int main()
         
         tiles.move(0, SquareSize);
         window.draw(tiles);
+        
+        for (int y = 0; y < Y; y++)
+        {
+            for (int x = 0; x < X; x++)
+            {
+                int blockType = ((x+1)*(y+1))%8;
+                if (blockType == -1) continue;
+
+                blockTiles[blockType].setPosition(x*32,y*32);
+                
+                window.draw(blockTiles[blockType]);
+            }
+        }
+        window.draw(text);
         window.display();
     }
 
@@ -231,6 +254,35 @@ void printFieldToConsole() {
 }
 
 void drawField()
+void loadTextures()
 {
+    // load textures
+    if (!(t1).loadFromFile("../Assets/Tiles.png"))
+    {
+        printf("Didnt find tile texture!");
+    }
+    if (!font.loadFromFile("../Assets/Righteous.ttf"))
+    {
+        printf("Couldn't load the font!");
+    }
 
+    // set tile sprites
+    for (int i = 0; i < 8; i++)
+    {
+        blockTiles[i].setTexture(t1);
+        blockTiles[i].setTextureRect(sf::IntRect((32 * i), 0, 32, 32));
+    }
+
+    // define score text
+    text.setFont(font);
+    text.setString("Score: 0000");
+    text.setCharacterSize(24);
+    text.setFillColor(Color::White);
+    text.setPosition(460, 0);
+}
+
+// add points to score
+void addScore(int value)
+{
+    score += value;
 }
