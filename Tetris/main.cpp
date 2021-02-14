@@ -1,11 +1,14 @@
 #include <SFML/Graphics.hpp>
 #include <stdlib.h> 
 #include <Windows.h>
+#include "blocks.h"
 
 using namespace sf;
 using namespace std;
 
 //functions
+void loadTextures();
+void addScore(int value);
 void printFieldToConsole();
 void drawField();
 bool newBlock();
@@ -15,10 +18,6 @@ int moveBlockOneLeft();
 int moveBlockOneRight();
 
 //variables
-
-void loadTextures();
-void addScore(int value);
-
 const unsigned int X = 14;
 const unsigned int Y = 20;
 const unsigned int SquareSize = 23;
@@ -69,7 +68,6 @@ Text text;
 
 int score = 0;
 
-
 int field[X][Y] = { 0 };
 int currentObjectPosition[4][2] = { 0 };    //[one of the 4 blocks of one "total block"][X and Y]
 int currentBlockType = 0;
@@ -100,17 +98,7 @@ int main()
         
         window.clear();
         Sleep(100);
-
-        //int t = GetAsyncKeyState(0x41);
-        //printf("%d", t);
-        //
-        //
-        //if ((GetAsyncKeyState(VK_ESCAPE) & 0x01))
-        //{
-        //    printf("adsfasfd");
-        //}
-        
-        
+                
         if (!moveBlockOneDown()) {
             if (!newBlock()) {
                 printf("\ngame over!\n\n");
@@ -121,21 +109,19 @@ int main()
         //moveBlockOneLeft();
         printFieldToConsole();
         
-        tiles.move(0, SquareSize);
-        window.draw(tiles);
-        
         for (int y = 0; y < Y; y++)
         {
             for (int x = 0; x < X; x++)
             {
-                int blockType = ((x+1)*(y+1))%8;
-                if (blockType == -1) continue;
+                int blockType = field[x][y];
+                if (blockType == -1) blockType = 7;
 
                 blockTiles[blockType].setPosition(x*32,y*32);
                 
                 window.draw(blockTiles[blockType]);
             }
         }
+
         window.draw(text);
         window.display();
     }
@@ -253,7 +239,6 @@ void printFieldToConsole() {
     printf("============\n");
 }
 
-void drawField()
 void loadTextures()
 {
     // load textures
