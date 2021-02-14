@@ -94,8 +94,67 @@ int main()
         sf::Event event;
         while (window.pollEvent(event))
         {
-            if (event.type == sf::Event::Closed)
+            switch (event.type)
+            {
+            // window closed
+            case sf::Event::Closed:
                 window.close();
+                break;
+
+            // key pressed
+            case sf::Event::KeyPressed:
+                printf("keypressed");
+                switch (event.key.code)
+                {
+                case sf::Keyboard::Left:
+                {
+                    moveBlockOneLeft();
+                    break;
+                }
+                case sf::Keyboard::Right:
+                {
+                    moveBlockOneRight();
+                    break;
+                }
+                case sf::Keyboard::Down:
+                {
+                    while (moveBlockOneDown()) {}
+                    break;
+                }
+                case sf::Keyboard::Up:
+                {
+                    //rotate
+                    break;
+                }
+                case sf::Keyboard::A:
+                {
+                    moveBlockOneLeft();
+                    break;
+                }
+                case sf::Keyboard::D:
+                {
+                    moveBlockOneRight();
+                    break;
+                }
+                case sf::Keyboard::S:
+                {
+                    while (moveBlockOneDown()) {}
+                    break;
+                }
+                case sf::Keyboard::W:
+                {
+                    //rotate
+                    break;
+                }
+                default:
+                    break;
+                } 
+
+                break;
+
+            default:
+                break;
+            }
         }
         
         window.clear();
@@ -107,8 +166,6 @@ int main()
                 return 0;
             }
         }
-        moveBlockOneRight();
-        //moveBlockOneLeft();
         printFieldToConsole();
         
         for (int y = 0; y < Y; y++)
