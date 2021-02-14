@@ -79,6 +79,7 @@ int main()
     sf::RenderWindow window(sf::VideoMode(610, 640), "Tetris");
 
     loadTextures();
+    readBlocks();
 
     Sprite tiles(t1);
     tiles.setTextureRect(IntRect(0, 0, SquareSize, SquareSize));
@@ -86,6 +87,7 @@ int main()
     newBlock();
     printFieldToConsole();
     clearField();
+    
 
     while (window.isOpen())
     {
