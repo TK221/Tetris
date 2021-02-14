@@ -1,10 +1,67 @@
 #include <SFML/Graphics.hpp>
-using namespace sf;
+#include <stdlib.h> 
+#include <Windows.h>
 
+using namespace sf;
+using namespace std;
+
+//functions
+void printFieldToConsole();
+void drawField();
+bool newBlock();
+void clearField();
+int moveBlockOneDown();
+int moveBlockOneLeft();
+int moveBlockOneRight();
+
+//variables
 const unsigned int X = 14;
 const unsigned int Y = 20;
+const unsigned int SquareSize = 23;
+
+int block[7][4][4] =
+{
+    1,0,0,0,    
+    1,0,0,0,
+    1,0,0,0,
+    1,0,0,0,
+
+    2,0,0,0,
+    2,2,0,0,
+    0,2,0,0,
+    0,0,0,0,
+
+    0,3,0,0,
+    3,3,0,0,
+    3,0,0,0,
+    0,0,0,0,
+
+    0,4,0,0,
+    0,4,0,0,
+    4,4,0,0,
+    0,0,0,0,
+
+    5,5,0,0,
+    5,5,0,0,
+    0,0,0,0,
+    0,0,0,0,
+
+    6,0,0,0,
+    6,6,0,0,
+    6,0,0,0,
+    0,0,0,0,
+
+    7,0,0,0,
+    7,0,0,0,
+    7,7,0,0,
+    0,0,0,0,
+};
 
 int field[X][Y] = { 0 };
+int currentObjectPosition[4][2] = { 0 };    //[one of the 4 blocks of one "total block"][X and Y]
+int currentBlockType = 0;
+int currentBlockPosX;
+int currentBlockPosY;
 
 int main()
 {
@@ -17,7 +74,11 @@ int main()
     }
 
     Sprite tiles(t1);
-    tiles.setTextureRect(IntRect(0, 0, 23, 23));
+    tiles.setTextureRect(IntRect(0, 0, SquareSize, SquareSize));
+
+    newBlock();
+    printFieldToConsole();
+    clearField();
 
     while (window.isOpen())
     {
@@ -29,12 +90,144 @@ int main()
         }
 
         window.clear();
-        tiles.move(0, 10);
+        Sleep(100);
+
+        //int t = GetAsyncKeyState(0x41);
+        //printf("%d", t);
+        //
+        //
+        //if ((GetAsyncKeyState(VK_ESCAPE) & 0x01))
+        //{
+        //    printf("adsfasfd");
+        //}
+        
+        
+        if (!moveBlockOneDown()) {
+            if (!newBlock()) {
+                printf("\ngame over!\n\n");
+                return 0;
+            }
+        }
+        moveBlockOneRight();
+        //moveBlockOneLeft();
+        printFieldToConsole();
+        
+        tiles.move(0, SquareSize);
         window.draw(tiles);
         window.display();
     }
 
     return 0;
+}
+
+void clearField() {
+    for (int i = 0; i < Y; i++) {
+        for (int j = 0; j < X; j++) {
+            if (i == Y - 1 || j == 0 || j == X-1) {
+                field[j][i] = -1;
+            }
+            else {
+                field[j][i] = 0;
+            }
+        }
+    }
+}
+
+int moveBlockOneDown() {
+    int tmpField[X][Y];
+    std::copy(&field[0][0], &field[0][0] + X * Y, &tmpField[0][0]);
+    for (int i = 3; i >= 0; i--) {
+        for (int j = 3; j >= 0; j--) {
+            if (block[currentBlockType][i][j] != 0) {
+                if (field[currentBlockPosX + j][currentBlockPosY + i + 1] == 0) {
+                    field[currentBlockPosX + j][currentBlockPosY + i + 1] = block[currentBlockType][i][j];
+                    field[currentBlockPosX + j][currentBlockPosY + i] = 0;
+                }
+                else {
+                    std::copy(&tmpField[0][0], &tmpField[0][0] + X * Y, &field[0][0]);
+                    return false;
+                }
+            }
+        }
+    }
+    currentBlockPosY++;
+    return true;
+}
+
+int moveBlockOneLeft() {
+    int tmpField[X][Y];
+    std::copy(&field[0][0], &field[0][0] + X * Y, &tmpField[0][0]);
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            if (block[currentBlockType][i][j] != 0) {
+                if (field[currentBlockPosX + j - 1][currentBlockPosY + i] == 0) {
+                    field[currentBlockPosX + j - 1][currentBlockPosY + i] = block[currentBlockType][i][j];
+                    field[currentBlockPosX + j][currentBlockPosY + i] = 0;
+                }
+                else {
+                    std::copy(&tmpField[0][0], &tmpField[0][0] + X * Y, &field[0][0]);
+                    return false;
+                }
+            }
+        }
+    }
+    currentBlockPosX--;
+    return true;
+}
+
+int moveBlockOneRight() {
+    int tmpField[X][Y];
+    std::copy(&field[0][0], &field[0][0] + X * Y, &tmpField[0][0]);
+    for (int i = 3; i >= 0; i--) {
+        for (int j = 3; j >= 0; j--) {
+            if (block[currentBlockType][i][j] != 0) {
+                if (field[currentBlockPosX + j + 1][currentBlockPosY + i] == 0) {
+                    field[currentBlockPosX + j + 1][currentBlockPosY + i] = block[currentBlockType][i][j];
+                    field[currentBlockPosX + j][currentBlockPosY + i] = 0;
+                }
+                else {
+                    std::copy(&tmpField[0][0], &tmpField[0][0] + X * Y, &field[0][0]);
+                    return false;
+                }
+            }
+        }
+    }
+    currentBlockPosX++;
+    return true;
+}
+
+bool newBlock() {   //returns false if collision
+    srand(time(NULL));
+    currentBlockType = rand() % 7;
+    int tmpField[X][Y];
+    std::copy(&field[0][0], &field[0][0] + X * Y, &tmpField[0][0]);
+    
+    for (int j = 0; j < 4; j++) {
+        for (int i = 0; i < 4; i++) {
+            if (block[currentBlockType][i][j] != 0) {
+                if (field[j + (X / 2)][i] == 0) {
+                    field[j + (X / 2)][i] = block[currentBlockType][i][j];
+                }
+                else {
+                    std::copy(&tmpField[0][0], &tmpField[0][0] + X * Y, &field[0][0]);
+                    return false;
+                }
+            }
+        }
+    }
+    currentBlockPosX = X / 2;
+    currentBlockPosY = 0;
+    return true;
+}
+
+void printFieldToConsole() {
+    for (int i = 0; i < Y; i++) {
+        for (int j = 0; j < X; j++) {
+            printf("%i", field[j][i]);
+        }
+        printf("\n");
+    }
+    printf("============\n");
 }
 
 void drawField()
