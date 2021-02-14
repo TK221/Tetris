@@ -16,6 +16,7 @@ void clearField();
 int moveBlockOneDown();
 int moveBlockOneLeft();
 int moveBlockOneRight();
+void clearFullRows();
 
 //variables
 const unsigned int X = 14;
@@ -84,7 +85,7 @@ int main()
     Sprite tiles(t1);
     tiles.setTextureRect(IntRect(0, 0, SquareSize, SquareSize));
 
-    newBlock();
+    //newBlock();
     printFieldToConsole();
     clearField();
     
@@ -158,7 +159,7 @@ int main()
         }
         
         window.clear();
-        Sleep(100);
+        Sleep(400);
                 
         if (!moveBlockOneDown()) {
             if (!newBlock()) {
@@ -166,6 +167,7 @@ int main()
                 return 0;
             }
         }
+        clearFullRows();
         printFieldToConsole();
         
         for (int y = 0; y < Y; y++)
@@ -323,6 +325,31 @@ void loadTextures()
     text.setCharacterSize(24);
     text.setFillColor(Color::White);
     text.setPosition(460, 0);
+}
+
+void clearFullRows() {
+    for (int y = 1; y < Y-1; y++) {
+        for (int x = 1; x < X; x++) {
+            if (field[x][y] == 0) break;
+            else if (x == X - 1) {
+                printf("delete row");
+                //delete this row and move everything above one down
+                for (int x2 = 1; x2 < X-1; x2++) {
+                    field[x2][y] = 0;
+                }
+                //for (int y2 = y +1; y2 < Y; y2++) {
+                //    for (int x2 = 1; x2 < X-1; x2++) {
+                //        field[x2][y2] = field[x2][y2-1];
+                //    }
+                //}
+                printFieldToConsole();
+                //for (int x2 = 1; x2 < X-1; x2++) {    //new top row
+                //    field[x2][0] = 0;
+                //    printFieldToConsole();
+                //}
+            }
+        }
+    }
 }
 
 // add points to score
