@@ -8,6 +8,9 @@ using namespace std;
 
 //functions
 void loadTextures();
+void displayText(sf::RenderWindow* window);
+void gameOver();
+
 void addScore(int value);
 void printFieldToConsole();
 void drawField();
@@ -62,11 +65,12 @@ int block[7][4][4] =
 
 
 Texture t1;
-Sprite blockTiles[8];
+Sprite blockTiles[9];
 Font font;
 Text text;
 
 int score = 0;
+bool isGameOver = false;
 
 int field[X][Y] = { 0 };
 int currentObjectPosition[4][2] = { 0 };    //[one of the 4 blocks of one "total block"][X and Y]
@@ -100,23 +104,28 @@ int main()
         
         window.clear();
         Sleep(100);
-                
-        if (!moveBlockOneDown()) {
-            if (!newBlock()) {
-                printf("\ngame over!\n\n");
-                return 0;
+        
+        if (!isGameOver)
+        {
+            if (!moveBlockOneDown()) {
+                if (!newBlock()) {
+
+                    gameOver();
+                }
             }
+
+            moveBlockOneRight();
+            //moveBlockOneLeft();
+            printFieldToConsole();
         }
-        moveBlockOneRight();
-        //moveBlockOneLeft();
-        printFieldToConsole();
+        
         
         for (int y = 0; y < Y; y++)
         {
             for (int x = 0; x < X; x++)
             {
                 int blockType = field[x][y];
-                if (blockType == -1) blockType = 7;
+                if (blockType == -1) blockType = 8;
 
                 blockTiles[blockType].setPosition(x*32,y*32);
                 
@@ -124,7 +133,7 @@ int main()
             }
         }
 
-        window.draw(text);
+        displayText(&window);
         window.display();
     }
 
@@ -254,22 +263,43 @@ void loadTextures()
     }
 
     // set tile sprites
-    for (int i = 0; i < 8; i++)
+    for (int i = 0; i < 9; i++)
     {
         blockTiles[i].setTexture(t1);
         blockTiles[i].setTextureRect(sf::IntRect((32 * i), 0, 32, 32));
     }
 
-    // define score text
+    // set font
     text.setFont(font);
+}
+
+void displayText(sf::RenderWindow *window)
+{
+    // define score text
     text.setString("Score: 0000");
     text.setCharacterSize(24);
     text.setFillColor(Color::White);
     text.setPosition(460, 0);
+    (*window).draw(text);
+
+    // game over text
+    if (isGameOver)
+    {
+        text.setString("Game Over\nScore: " + score);
+        text.setCharacterSize(40);
+        text.setFillColor(Color::Red);
+        text.setPosition(250, 250);
+        (*window).draw(text);
+    }
 }
 
 // add points to score
 void addScore(int value)
 {
     score += value;
+}
+
+void gameOver()
+{
+    isGameOver = true;
 }
