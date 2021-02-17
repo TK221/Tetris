@@ -6,10 +6,21 @@
 using namespace sf;
 using namespace std;
 
+//variables
+const unsigned int XSCREEN = 610;
+const unsigned int YSCREEN = 640;
+const unsigned int X = 14;
+const unsigned int Y = 20;
+const unsigned int SquareSize = 32;
+
 //functions
 void loadTextures();
+void displayText(sf::RenderWindow* window);
+void gameOver();
+
 void addScore(int value);
 void printFieldToConsole();
+void drawField(sf::RenderWindow* window);
 bool newBlock();
 void clearField();
 int moveBlockOneDown();
@@ -17,18 +28,16 @@ int moveBlockOneLeft();
 int moveBlockOneRight();
 void clearFullRows();
 bool rotateBlock();
+void deleteBlock();
 
 //variables
-const unsigned int X = 14;
-const unsigned int Y = 20;
-const unsigned int SquareSize = 23;
-
 Texture t1;
-Sprite blockTiles[8];
+Sprite blockTiles[9];
 Font font;
 Text text;
 
 int score = 0;
+bool isGameOver = false;
 
 int field[X][Y] = { 0 };
 int currentObjectPosition[4][2] = { 0 };    //[one of the 4 blocks of one "total block"][X and Y]
@@ -36,10 +45,11 @@ int currentBlockType = 0;
 int currentBlockPosX;
 int currentBlockPosY;
 int currentBlockRotation = 0;
+int holdBlock = -1;
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(610, 640), "Tetris");
+    sf::RenderWindow window(sf::VideoMode(XSCREEN, YSCREEN), "Tetris");
 
     loadTextures();
     readBlocks();
@@ -121,35 +131,60 @@ int main()
         }
         
         window.clear();
-        Sleep(400);
-                
-        if (!moveBlockOneDown()) {
-            if (!newBlock()) {
-                printf("\ngame over!\n\n");
-                return 0;
-            }
-        }
-        clearFullRows();
-        printFieldToConsole();
-        
-        for (int y = 0; y < Y; y++)
+        Sleep(200);
+        if (!isGameOver)
         {
-            for (int x = 0; x < X; x++)
-            {
-                int blockType = field[x][y];
-                if (blockType == -1) blockType = 7;
+            if (!moveBlockOneDown()) {
+                srand(time(NULL));
+                currentBlockType = rand() % 7;
+                if (!newBlock()) {
+                    gameOver();
+                }
 
-                blockTiles[blockType].setPosition(x*32,y*32);
-                
-                window.draw(blockTiles[blockType]);
+                moveBlockOneRight();
+                //moveBlockOneLeft();
+                printFieldToConsole();
             }
+            clearFullRows();
+            printFieldToConsole();
         }
+        
 
-        window.draw(text);
+        drawField(&window);
+        displayText(&window);
+
         window.display();
     }
 
     return 0;
+}
+
+void drawField(sf::RenderWindow* window)
+{
+    for (int y = 0; y < Y; y++)
+    {
+        for (int x = 0; x < X; x++)
+        {
+            int blockType = field[x][y];
+            if (blockType == -1) blockType = 8;
+
+            blockTiles[blockType].setPosition(x * SquareSize, y * SquareSize);
+
+            (*window).draw(blockTiles[blockType]);
+        }
+    }
+
+    for (int y = 0; y < 4; y++)
+    {
+        for (int x = 0; x < 4; x++)
+        {
+            if (blockTypes[(currentBlockType)][0][x][y] == 0) continue;
+            
+            blockTiles[(currentBlockType + 1)].setPosition((x * SquareSize) + 15 * SquareSize, (y * SquareSize) + 10 * SquareSize);
+
+            (*window).draw(blockTiles[(currentBlockType + 1)]);
+        }
+    }
 }
 
 void clearField() {
@@ -229,8 +264,6 @@ int moveBlockOneRight() {
 }
 
 bool newBlock() {   //returns false if collision
-    srand(time(NULL));
-    currentBlockType = rand() % 7;
     int tmpField[X][Y];
     std::copy(&field[0][0], &field[0][0] + X * Y, &tmpField[0][0]);
     currentBlockRotation = 1;
@@ -251,6 +284,39 @@ bool newBlock() {   //returns false if collision
     currentBlockPosX = X / 2;
     currentBlockPosY = 0;
     return true;
+}
+
+void changeHoldBlock()
+{
+    deleteBlock();
+    
+    if (holdBlock != -1)
+    {
+        int tempBlock = currentBlockType;
+        currentBlockType = holdBlock;
+        holdBlock = tempBlock;
+    }
+    else
+    {
+        srand(time(NULL));
+        currentBlockType = rand() % 7;
+    }
+
+    newBlock();
+}
+
+// delete current block in the field
+void deleteBlock()
+{
+    for (int y = 0; y < 4; y++)
+    {
+        for (int x = 0; x < 4; x++)
+        {
+            if (blockTypes[currentBlockType][currentBlockRotation][x][y] == 0) continue;
+
+            field[currentBlockPosX + x][currentBlockPosY + y] = 0;
+        }
+    }
 }
 
 void printFieldToConsole() {
@@ -276,18 +342,38 @@ void loadTextures()
     }
 
     // set tile sprites
-    for (int i = 0; i < 8; i++)
+    for (int i = 0; i < 9; i++)
     {
         blockTiles[i].setTexture(t1);
-        blockTiles[i].setTextureRect(sf::IntRect((32 * i), 0, 32, 32));
+        blockTiles[i].setTextureRect(sf::IntRect((SquareSize * i), 0, SquareSize, SquareSize));
     }
 
-    // define score text
+    // set font
     text.setFont(font);
-    text.setString("Score: 0000");
+}
+
+void displayText(sf::RenderWindow *window)
+{
+    // define score text
+    char str[25];
+
+    sprintf_s(str, "Score: %04d", score);
+    text.setString(str);
     text.setCharacterSize(24);
     text.setFillColor(Color::White);
     text.setPosition(460, 0);
+    (*window).draw(text);
+
+    // game over text
+    if (isGameOver)
+    {
+        sprintf_s(str, "Game Over\nScore: %04d", score);
+        text.setString(str);
+        text.setCharacterSize(60);
+        text.setFillColor(Color::Red);
+        text.setPosition(XSCREEN/4, YSCREEN/4);
+        (*window).draw(text);
+    }
 }
 
 void clearFullRows() {
@@ -296,6 +382,7 @@ void clearFullRows() {
             if (field[x][y] == 0) break;
             else if (x == X - 1) {
                 printf("delete row");
+                addScore(100);
                 //delete this row and move everything above one down
                 for (int x2 = 1; x2 < X-1; x2++) {
                     field[x2][y] = 0;
@@ -368,4 +455,9 @@ bool rotateBlock() {
 void addScore(int value)
 {
     score += value;
+}
+
+void gameOver()
+{
+    isGameOver = true;
 }
