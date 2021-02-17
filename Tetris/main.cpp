@@ -19,6 +19,7 @@ void clearField();
 int moveBlockOneDown();
 int moveBlockOneLeft();
 int moveBlockOneRight();
+void clearFullRows();
 
 //variables
 const unsigned int X = 14;
@@ -88,7 +89,7 @@ int main()
     Sprite tiles(t1);
     tiles.setTextureRect(IntRect(0, 0, SquareSize, SquareSize));
 
-    newBlock();
+    //newBlock();
     printFieldToConsole();
     clearField();
     
@@ -98,27 +99,84 @@ int main()
         sf::Event event;
         while (window.pollEvent(event))
         {
-            if (event.type == sf::Event::Closed)
+            switch (event.type)
+            {
+            // window closed
+            case sf::Event::Closed:
                 window.close();
+                break;
+
+            // key pressed
+            case sf::Event::KeyPressed:
+                printf("keypressed");
+                switch (event.key.code)
+                {
+                case sf::Keyboard::Left:
+                {
+                    moveBlockOneLeft();
+                    break;
+                }
+                case sf::Keyboard::Right:
+                {
+                    moveBlockOneRight();
+                    break;
+                }
+                case sf::Keyboard::Down:
+                {
+                    while (moveBlockOneDown()) {}
+                    break;
+                }
+                case sf::Keyboard::Up:
+                {
+                    //rotate
+                    break;
+                }
+                case sf::Keyboard::A:
+                {
+                    moveBlockOneLeft();
+                    break;
+                }
+                case sf::Keyboard::D:
+                {
+                    moveBlockOneRight();
+                    break;
+                }
+                case sf::Keyboard::S:
+                {
+                    while (moveBlockOneDown()) {}
+                    break;
+                }
+                case sf::Keyboard::W:
+                {
+                    //rotate
+                    break;
+                }
+                default:
+                    break;
+                } 
+
+                break;
+
+            default:
+                break;
+            }
         }
         
         window.clear();
-        Sleep(100);
-        
-        if (!isGameOver)
-        {
-            if (!moveBlockOneDown()) {
-                if (!newBlock()) {
-
-                    gameOver();
-                }
+        Sleep(400);
+                
+        if (!moveBlockOneDown()) {
+            if (!newBlock()) {
+                printf("\ngame over!\n\n");
+                return 0;
             }
 
             moveBlockOneRight();
             //moveBlockOneLeft();
             printFieldToConsole();
         }
-        
+        clearFullRows();
+        printFieldToConsole();
         
         for (int y = 0; y < Y; y++)
         {
@@ -290,6 +348,29 @@ void displayText(sf::RenderWindow *window)
         text.setFillColor(Color::Red);
         text.setPosition(250, 250);
         (*window).draw(text);
+    }
+}
+
+void clearFullRows() {
+    for (int y = 1; y < Y-1; y++) {
+        for (int x = 1; x < X; x++) {
+            if (field[x][y] == 0) break;
+            else if (x == X - 1) {
+                printf("delete row");
+                //delete this row and move everything above one down
+                for (int x2 = 1; x2 < X-1; x2++) {
+                    field[x2][y] = 0;
+                }
+                for (int y2 = y; y2>0; y2--) {
+                    for (int x2 = 1; x2 < X-1; x2++) {
+                        field[x2][y2] = field[x2][y2-1];
+                        field[x2][y2 - 1] = 0;
+                    }
+                }
+                currentBlockPosY++;
+                printFieldToConsole();
+            }
+        }
     }
 }
 
