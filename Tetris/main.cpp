@@ -308,6 +308,7 @@ void clearFullRows() {
                 }
                 currentBlockPosY++;
                 printFieldToConsole();
+                newBlock();
             }
         }
     }
