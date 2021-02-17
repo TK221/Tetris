@@ -10,7 +10,6 @@ using namespace std;
 void loadTextures();
 void addScore(int value);
 void printFieldToConsole();
-void drawField();
 bool newBlock();
 void clearField();
 int moveBlockOneDown();
@@ -23,45 +22,6 @@ bool rotateBlock();
 const unsigned int X = 14;
 const unsigned int Y = 20;
 const unsigned int SquareSize = 23;
-
-int block[7][4][4] =
-{
-    1,0,0,0,    
-    1,0,0,0,
-    1,0,0,0,
-    1,0,0,0,
-
-    2,0,0,0,
-    2,2,0,0,
-    0,2,0,0,
-    0,0,0,0,
-
-    0,3,0,0,
-    3,3,0,0,
-    3,0,0,0,
-    0,0,0,0,
-
-    0,4,0,0,
-    0,4,0,0,
-    4,4,0,0,
-    0,0,0,0,
-
-    0,0,0,0,
-    0,5,5,0,
-    0,5,5,0,
-    0,0,0,0,
-
-    6,0,0,0,
-    6,6,0,0,
-    6,0,0,0,
-    0,0,0,0,
-
-    7,0,0,0,
-    7,0,0,0,
-    7,7,0,0,
-    0,0,0,0,
-};
-
 
 Texture t1;
 Sprite blockTiles[8];
@@ -364,10 +324,10 @@ bool rotateBlock() {
     {
         for (int x = 0; x < 4; x++)
         {
-            printf("%d,", blockTypes[currentBlockType][currentBlockRotation][y][x]);
-            field[currentBlockPosX + y][currentBlockPosY + x] = 0;
-            //if (blockTypes[currentBlockType][currentBlockRotation][y][x] != 0) {
-            //}
+            printf("%d,", blockTypes[currentBlockType][currentBlockRotation][x][y]);
+            if (blockTypes[currentBlockType][currentBlockRotation][x][y] != 0) {
+                field[currentBlockPosX + y][currentBlockPosY + x] = 0;
+            }
         }
         printf("\n");
     }
@@ -379,26 +339,25 @@ bool rotateBlock() {
     printf("rotate middle:\n");
     printFieldToConsole();
 
-    //for (int y = 0; y < 4; y++)
-    //{
-    //    for (int x = 0; x < 4; x++)
-    //    {
-    //        printf("%d,", blockTypes[currentBlockType][currentBlockRotation][y][x]);
-    //        if (blockTypes[currentBlockType][currentBlockRotation][y][x] != 0) {
-    //            if (field[currentBlockPosX + y][currentBlockPosY + x] == 0) {
-    //                field[currentBlockPosX + y][currentBlockPosY + x] = currentBlockType + 1;
-
-    //            }
-    //            else {
-    //                printf("error rotation\n");
-    //                std::copy(&tmpField[0][0], &tmpField[0][0] + X * Y, &field[0][0]);
-    //                return false;
-    //            }
-    //        }
-    //    }
-    //    printf("\n");
-    //}
-    //printf("\n");
+    for (int i = 3; i >= 0; i--) {
+        for (int j = 3; j >= 0; j--) {
+            if (blockTypes[currentBlockType][currentBlockRotation][i][j] != 0) {
+                if (field[currentBlockPosX + j][currentBlockPosY + i] == 0) {
+                    field[currentBlockPosX + j][currentBlockPosY + i] = blockTypes[currentBlockType][currentBlockRotation][i][j];
+                }
+                else {
+                    std::copy(&tmpField[0][0], &tmpField[0][0] + X * Y, &field[0][0]);
+                    printf("error rotate\n");
+                    if (currentBlockRotation > 0) {
+                        currentBlockRotation--;
+                    }
+                    else currentBlockRotation = 3;
+                    printf("rotate: %d", currentBlockRotation);
+                    return false;
+                }
+            }
+        }
+    }
     
     printf("rotate end:\n");
     return true;
