@@ -17,6 +17,7 @@ int moveBlockOneDown();
 int moveBlockOneLeft();
 int moveBlockOneRight();
 void clearFullRows();
+bool rotateBlock();
 
 //variables
 const unsigned int X = 14;
@@ -45,9 +46,9 @@ int block[7][4][4] =
     4,4,0,0,
     0,0,0,0,
 
-    5,5,0,0,
-    5,5,0,0,
     0,0,0,0,
+    0,5,5,0,
+    0,5,5,0,
     0,0,0,0,
 
     6,0,0,0,
@@ -74,6 +75,7 @@ int currentObjectPosition[4][2] = { 0 };    //[one of the 4 blocks of one "total
 int currentBlockType = 0;
 int currentBlockPosX;
 int currentBlockPosY;
+int currentBlockRotation = 0;
 
 int main()
 {
@@ -124,7 +126,7 @@ int main()
                 }
                 case sf::Keyboard::Up:
                 {
-                    //rotate
+                    rotateBlock();
                     break;
                 }
                 case sf::Keyboard::A:
@@ -144,7 +146,7 @@ int main()
                 }
                 case sf::Keyboard::W:
                 {
-                    //rotate
+                    rotateBlock();
                     break;
                 }
                 default:
@@ -208,9 +210,9 @@ int moveBlockOneDown() {
     std::copy(&field[0][0], &field[0][0] + X * Y, &tmpField[0][0]);
     for (int i = 3; i >= 0; i--) {
         for (int j = 3; j >= 0; j--) {
-            if (block[currentBlockType][i][j] != 0) {
+            if (blockTypes[currentBlockType][currentBlockRotation][i][j] != 0) {
                 if (field[currentBlockPosX + j][currentBlockPosY + i + 1] == 0) {
-                    field[currentBlockPosX + j][currentBlockPosY + i + 1] = block[currentBlockType][i][j];
+                    field[currentBlockPosX + j][currentBlockPosY + i + 1] = blockTypes[currentBlockType][currentBlockRotation][i][j];
                     field[currentBlockPosX + j][currentBlockPosY + i] = 0;
                 }
                 else {
@@ -229,9 +231,9 @@ int moveBlockOneLeft() {
     std::copy(&field[0][0], &field[0][0] + X * Y, &tmpField[0][0]);
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
-            if (block[currentBlockType][i][j] != 0) {
+            if (blockTypes[currentBlockType][currentBlockRotation][i][j] != 0) {
                 if (field[currentBlockPosX + j - 1][currentBlockPosY + i] == 0) {
-                    field[currentBlockPosX + j - 1][currentBlockPosY + i] = block[currentBlockType][i][j];
+                    field[currentBlockPosX + j - 1][currentBlockPosY + i] = blockTypes[currentBlockType][currentBlockRotation][i][j];
                     field[currentBlockPosX + j][currentBlockPosY + i] = 0;
                 }
                 else {
@@ -250,9 +252,9 @@ int moveBlockOneRight() {
     std::copy(&field[0][0], &field[0][0] + X * Y, &tmpField[0][0]);
     for (int i = 3; i >= 0; i--) {
         for (int j = 3; j >= 0; j--) {
-            if (block[currentBlockType][i][j] != 0) {
+            if (blockTypes[currentBlockType][currentBlockRotation][i][j] != 0) {
                 if (field[currentBlockPosX + j + 1][currentBlockPosY + i] == 0) {
-                    field[currentBlockPosX + j + 1][currentBlockPosY + i] = block[currentBlockType][i][j];
+                    field[currentBlockPosX + j + 1][currentBlockPosY + i] = blockTypes[currentBlockType][currentBlockRotation][i][j];
                     field[currentBlockPosX + j][currentBlockPosY + i] = 0;
                 }
                 else {
@@ -271,12 +273,13 @@ bool newBlock() {   //returns false if collision
     currentBlockType = rand() % 7;
     int tmpField[X][Y];
     std::copy(&field[0][0], &field[0][0] + X * Y, &tmpField[0][0]);
+    currentBlockRotation = 1;
     
     for (int j = 0; j < 4; j++) {
         for (int i = 0; i < 4; i++) {
-            if (block[currentBlockType][i][j] != 0) {
+            if (blockTypes[currentBlockType][currentBlockRotation][i][j] != 0) {
                 if (field[j + (X / 2)][i] == 0) {
-                    field[j + (X / 2)][i] = block[currentBlockType][i][j];
+                    field[j + (X / 2)][i] = blockTypes[currentBlockType][currentBlockRotation][i][j];
                 }
                 else {
                     std::copy(&tmpField[0][0], &tmpField[0][0] + X * Y, &field[0][0]);
@@ -348,6 +351,57 @@ void clearFullRows() {
             }
         }
     }
+}
+
+bool rotateBlock() {
+    printf("rotate start\n");
+    int tmpField[X][Y];
+    std::copy(&field[0][0], &field[0][0] + X * Y, &tmpField[0][0]);
+    printf("\ncurrent block %d\nrotate: %d\n", currentBlockType, currentBlockRotation);
+
+
+    for (int y = 0; y < 4; y++)
+    {
+        for (int x = 0; x < 4; x++)
+        {
+            printf("%d,", blockTypes[currentBlockType][currentBlockRotation][y][x]);
+            field[currentBlockPosX + y][currentBlockPosY + x] = 0;
+            //if (blockTypes[currentBlockType][currentBlockRotation][y][x] != 0) {
+            //}
+        }
+        printf("\n");
+    }
+    printf("\n");
+    if (currentBlockRotation < 3) {
+        currentBlockRotation++;
+    }
+    else currentBlockRotation = 0;
+    printf("rotate middle:\n");
+    printFieldToConsole();
+
+    //for (int y = 0; y < 4; y++)
+    //{
+    //    for (int x = 0; x < 4; x++)
+    //    {
+    //        printf("%d,", blockTypes[currentBlockType][currentBlockRotation][y][x]);
+    //        if (blockTypes[currentBlockType][currentBlockRotation][y][x] != 0) {
+    //            if (field[currentBlockPosX + y][currentBlockPosY + x] == 0) {
+    //                field[currentBlockPosX + y][currentBlockPosY + x] = currentBlockType + 1;
+
+    //            }
+    //            else {
+    //                printf("error rotation\n");
+    //                std::copy(&tmpField[0][0], &tmpField[0][0] + X * Y, &field[0][0]);
+    //                return false;
+    //            }
+    //        }
+    //    }
+    //    printf("\n");
+    //}
+    //printf("\n");
+    
+    printf("rotate end:\n");
+    return true;
 }
 
 // add points to score
