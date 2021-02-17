@@ -13,7 +13,7 @@ void gameOver();
 
 void addScore(int value);
 void printFieldToConsole();
-void drawField();
+void drawField(sf::RenderWindow* window);
 bool newBlock();
 void clearField();
 int moveBlockOneDown();
@@ -163,39 +163,58 @@ int main()
         }
         
         window.clear();
-        Sleep(400);
-                
-        if (!moveBlockOneDown()) {
-            if (!newBlock()) {
-                printf("\ngame over!\n\n");
-                return 0;
-            }
+        Sleep(200);
+        if (!isGameOver)
+        {
+            if (!moveBlockOneDown()) {
+                if (!newBlock()) {
+                    gameOver();
+                }
 
-            moveBlockOneRight();
-            //moveBlockOneLeft();
+                moveBlockOneRight();
+                //moveBlockOneLeft();
+                printFieldToConsole();
+            }
+            clearFullRows();
             printFieldToConsole();
         }
-        clearFullRows();
-        printFieldToConsole();
         
-        for (int y = 0; y < Y; y++)
-        {
-            for (int x = 0; x < X; x++)
-            {
-                int blockType = field[x][y];
-                if (blockType == -1) blockType = 8;
 
-                blockTiles[blockType].setPosition(x*32,y*32);
-                
-                window.draw(blockTiles[blockType]);
-            }
-        }
-
+        drawField(&window);
         displayText(&window);
+
         window.display();
     }
 
     return 0;
+}
+
+void drawField(sf::RenderWindow* window)
+{
+    for (int y = 0; y < Y; y++)
+    {
+        for (int x = 0; x < X; x++)
+        {
+            int blockType = field[x][y];
+            if (blockType == -1) blockType = 8;
+
+            blockTiles[blockType].setPosition(x * 32, y * 32);
+
+            (*window).draw(blockTiles[blockType]);
+        }
+    }
+
+    for (int y = 0; y < 4; y++)
+    {
+        for (int x = 0; x < 4; x++)
+        {
+            if (blockTypes[(currentBlockType)][0][x][y] == 0) continue;
+            
+            blockTiles[(currentBlockType + 1)].setPosition((x * 32) + 15 * 32, (y * 32) + 10 * 32);
+
+            (*window).draw(blockTiles[(currentBlockType + 1)]);
+        }
+    }
 }
 
 void clearField() {
