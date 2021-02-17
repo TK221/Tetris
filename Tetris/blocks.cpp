@@ -4,12 +4,9 @@
 using namespace std;
 
 void saveBlockTypes(int block[4][4], int type);
-void changeHoldBlock();
 
 // indexes where the real blocks of every type of block is
 int blockTypes[BLOCKNUMBER][4][4][4];
-int holdBlock[4][4];
-int currentBlock[4][4];
 
 
 // definition of normal block
@@ -107,18 +104,4 @@ void saveBlockTypes(int block[4][4], int type)
 		}
 	}
 	printf("\n");
-}
-
-// swap block between current and holded
-void changeHoldBlock()
-{
-	for (int y = 0; y < 4; y++)
-	{
-		for (int x = 0; x < 4; x++)
-		{
-			int temp = currentBlock[x][y];
-			currentBlock[x][y] = holdBlock[x][y];
-			holdBlock[x][y] = temp;
-		}
-	}
 }

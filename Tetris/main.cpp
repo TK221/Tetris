@@ -6,6 +6,13 @@
 using namespace sf;
 using namespace std;
 
+//variables
+const unsigned int XSCREEN = 610;
+const unsigned int YSCREEN = 640;
+const unsigned int X = 14;
+const unsigned int Y = 20;
+const unsigned int SquareSize = 32;
+
 //functions
 void loadTextures();
 void displayText(sf::RenderWindow* window);
@@ -21,12 +28,9 @@ int moveBlockOneLeft();
 int moveBlockOneRight();
 void clearFullRows();
 bool rotateBlock();
+void deleteBlock();
 
 //variables
-const unsigned int X = 14;
-const unsigned int Y = 20;
-const unsigned int SquareSize = 23;
-
 Texture t1;
 Sprite blockTiles[9];
 Font font;
@@ -41,10 +45,11 @@ int currentBlockType = 0;
 int currentBlockPosX;
 int currentBlockPosY;
 int currentBlockRotation = 0;
+int holdBlock = -1;
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(610, 640), "Tetris");
+    sf::RenderWindow window(sf::VideoMode(XSCREEN, YSCREEN), "Tetris");
 
     loadTextures();
     readBlocks();
@@ -130,6 +135,8 @@ int main()
         if (!isGameOver)
         {
             if (!moveBlockOneDown()) {
+                srand(time(NULL));
+                currentBlockType = rand() % 7;
                 if (!newBlock()) {
                     gameOver();
                 }
@@ -161,7 +168,7 @@ void drawField(sf::RenderWindow* window)
             int blockType = field[x][y];
             if (blockType == -1) blockType = 8;
 
-            blockTiles[blockType].setPosition(x * 32, y * 32);
+            blockTiles[blockType].setPosition(x * SquareSize, y * SquareSize);
 
             (*window).draw(blockTiles[blockType]);
         }
@@ -173,7 +180,7 @@ void drawField(sf::RenderWindow* window)
         {
             if (blockTypes[(currentBlockType)][0][x][y] == 0) continue;
             
-            blockTiles[(currentBlockType + 1)].setPosition((x * 32) + 15 * 32, (y * 32) + 10 * 32);
+            blockTiles[(currentBlockType + 1)].setPosition((x * SquareSize) + 15 * SquareSize, (y * SquareSize) + 10 * SquareSize);
 
             (*window).draw(blockTiles[(currentBlockType + 1)]);
         }
@@ -257,8 +264,6 @@ int moveBlockOneRight() {
 }
 
 bool newBlock() {   //returns false if collision
-    srand(time(NULL));
-    currentBlockType = rand() % 7;
     int tmpField[X][Y];
     std::copy(&field[0][0], &field[0][0] + X * Y, &tmpField[0][0]);
     currentBlockRotation = 1;
@@ -279,6 +284,39 @@ bool newBlock() {   //returns false if collision
     currentBlockPosX = X / 2;
     currentBlockPosY = 0;
     return true;
+}
+
+void changeHoldBlock()
+{
+    deleteBlock();
+    
+    if (holdBlock != -1)
+    {
+        int tempBlock = currentBlockType;
+        currentBlockType = holdBlock;
+        holdBlock = tempBlock;
+    }
+    else
+    {
+        srand(time(NULL));
+        currentBlockType = rand() % 7;
+    }
+
+    newBlock();
+}
+
+// delete current block in the field
+void deleteBlock()
+{
+    for (int y = 0; y < 4; y++)
+    {
+        for (int x = 0; x < 4; x++)
+        {
+            if (blockTypes[currentBlockType][currentBlockRotation][x][y] == 0) continue;
+
+            field[currentBlockPosX + x][currentBlockPosY + y] = 0;
+        }
+    }
 }
 
 void printFieldToConsole() {
@@ -307,7 +345,7 @@ void loadTextures()
     for (int i = 0; i < 9; i++)
     {
         blockTiles[i].setTexture(t1);
-        blockTiles[i].setTextureRect(sf::IntRect((32 * i), 0, 32, 32));
+        blockTiles[i].setTextureRect(sf::IntRect((SquareSize * i), 0, SquareSize, SquareSize));
     }
 
     // set font
@@ -317,7 +355,10 @@ void loadTextures()
 void displayText(sf::RenderWindow *window)
 {
     // define score text
-    text.setString("Score: 0000");
+    char str[25];
+
+    sprintf_s(str, "Score: %04d", score);
+    text.setString(str);
     text.setCharacterSize(24);
     text.setFillColor(Color::White);
     text.setPosition(460, 0);
@@ -326,10 +367,11 @@ void displayText(sf::RenderWindow *window)
     // game over text
     if (isGameOver)
     {
-        text.setString("Game Over\nScore: " + score);
-        text.setCharacterSize(40);
+        sprintf_s(str, "Game Over\nScore: %04d", score);
+        text.setString(str);
+        text.setCharacterSize(60);
         text.setFillColor(Color::Red);
-        text.setPosition(250, 250);
+        text.setPosition(XSCREEN/4, YSCREEN/4);
         (*window).draw(text);
     }
 }
@@ -340,6 +382,7 @@ void clearFullRows() {
             if (field[x][y] == 0) break;
             else if (x == X - 1) {
                 printf("delete row");
+                addScore(100);
                 //delete this row and move everything above one down
                 for (int x2 = 1; x2 < X-1; x2++) {
                     field[x2][y] = 0;
