@@ -66,6 +66,8 @@ int main()
     printFieldToConsole();
     clearField();
     
+    Clock clock;
+    float timer = 0, delay = 0.4f;
 
     while (window.isOpen())
     {
@@ -141,9 +143,12 @@ int main()
         }
         
         window.clear();
-        Sleep(200);
 
-        if (!isGameOver)
+        float Ftime = clock.getElapsedTime().asSeconds();
+        clock.restart();
+        timer += Ftime;
+
+        if (!isGameOver && timer > delay)
         {
             if (!moveBlockOneDown()) {
                 if (!newRandomBlock()) {
@@ -156,6 +161,8 @@ int main()
             }
             clearFullRows();
             printFieldToConsole();
+
+            timer = 0;
         }
         
 
@@ -452,7 +459,7 @@ void clearFullRows() {
                 }
                 currentBlockPosY++;
                 printFieldToConsole();
-                newBlock();
+                //newRandomBlock();
             }
         }
     }
