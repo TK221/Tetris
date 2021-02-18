@@ -11,7 +11,7 @@ using namespace std;
 void saveBlockTypes(int block[4][4], int type);
 
 // indexes where the real blocks of every type of block is
-int blockTypes[BLOCKNUMBER][4][4][4];
+int blockTypes[BLOCKNUMBER][4][4][4];	//blockTypes[BLOCKTYPE][BLOCKROTATION][X][Y]
 
 bool blockholded = false;		// is block currently holded
 int blockInARow = 0;			// new same created block in a row
@@ -160,12 +160,14 @@ bool newBlock() {   //returns false if collision
 	int tmpField[X][Y];
 	std::copy(&field[0][0], &field[0][0] + X * Y, &tmpField[0][0]);
 	currentBlockRotation = 1;
+	currentBlockPosX = (X / 2)-2;
+	currentBlockPosY = 0;
 
 	for (int j = 0; j < 4; j++) {
 		for (int i = 0; i < 4; i++) {
 			if (blockTypes[currentBlockType][currentBlockRotation][i][j] != 0) {
-				if (field[j + (X / 2)][i] == 0) {
-					field[j + (X / 2)][i] = blockTypes[currentBlockType][currentBlockRotation][i][j];
+				if (field[j + currentBlockPosX][i] == 0) {
+					field[j + currentBlockPosX][i] = blockTypes[currentBlockType][currentBlockRotation][i][j];
 				}
 				else {
 					std::copy(&tmpField[0][0], &tmpField[0][0] + X * Y, &field[0][0]);
@@ -174,8 +176,6 @@ bool newBlock() {   //returns false if collision
 			}
 		}
 	}
-	currentBlockPosX = X / 2;
-	currentBlockPosY = 0;
 
 	return true;
 }
