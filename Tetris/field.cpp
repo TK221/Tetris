@@ -99,7 +99,6 @@ void clearFullRows() {
         for (int x = 1; x < X; x++) {
             if (field[x][y] == 0) break;
             else if (x == X - 1) {
-                printf("delete row");
                 addScore(100);
                 //delete this row and move everything above one down
                 for (int x2 = 1; x2 < X - 1; x2++) {
@@ -112,8 +111,10 @@ void clearFullRows() {
                     }
                 }
                 currentBlockPosY++;
-                printFieldToConsole();
-                //newRandomBlock();
+#ifdef DEBUG_MODE
+    printf("delete row");
+    printFieldToConsole();
+#endif // DEBUG_MODE
             }
         }
     }
