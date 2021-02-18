@@ -29,6 +29,8 @@ int moveBlockOneRight();
 void clearFullRows();
 bool rotateBlock();
 void deleteBlock();
+void changeHoldBlock();
+bool newRandomBlock();
 
 //variables
 Texture t1;
@@ -38,6 +40,9 @@ Text text;
 
 int score = 0;
 bool isGameOver = false;
+
+bool blockholded = false;
+int blockInARow = 0;
 
 int field[X][Y] = { 0 };
 int currentObjectPosition[4][2] = { 0 };    //[one of the 4 blocks of one "total block"][X and Y]
@@ -54,8 +59,8 @@ int main()
     loadTextures();
     readBlocks();
 
-    Sprite tiles(t1);
-    tiles.setTextureRect(IntRect(0, 0, SquareSize, SquareSize));
+    //Sprite tiles(t1);
+    //tiles.setTextureRect(IntRect(0, 0, SquareSize, SquareSize));
 
     //newBlock();
     printFieldToConsole();
@@ -119,6 +124,11 @@ int main()
                     rotateBlock();
                     break;
                 }
+                case sf::Keyboard::Space:
+                {
+                    changeHoldBlock();
+                    break;
+                }
                 default:
                     break;
                 } 
@@ -132,12 +142,11 @@ int main()
         
         window.clear();
         Sleep(200);
+
         if (!isGameOver)
         {
             if (!moveBlockOneDown()) {
-                srand(time(NULL));
-                currentBlockType = rand() % 7;
-                if (!newBlock()) {
+                if (!newRandomBlock()) {
                     gameOver();
                 }
 
@@ -159,8 +168,10 @@ int main()
     return 0;
 }
 
+// draw the enitre field
 void drawField(sf::RenderWindow* window)
 {
+    // draw the gamfield with the current blocks
     for (int y = 0; y < Y; y++)
     {
         for (int x = 0; x < X; x++)
@@ -174,15 +185,19 @@ void drawField(sf::RenderWindow* window)
         }
     }
 
-    for (int y = 0; y < 4; y++)
+    // draw current holded block
+    if (holdBlock != -1)
     {
-        for (int x = 0; x < 4; x++)
+        for (int y = 0; y < 4; y++)
         {
-            if (blockTypes[(currentBlockType)][0][x][y] == 0) continue;
-            
-            blockTiles[(currentBlockType + 1)].setPosition((x * SquareSize) + 15 * SquareSize, (y * SquareSize) + 10 * SquareSize);
+            for (int x = 0; x < 4; x++)
+            {
+                if (blockTypes[(holdBlock)][1][x][y] == 0) continue;
 
-            (*window).draw(blockTiles[(currentBlockType + 1)]);
+                blockTiles[(holdBlock + 1)].setPosition((y * SquareSize) + 15 * SquareSize, (x * SquareSize) + 10 * SquareSize);
+
+                (*window).draw(blockTiles[(holdBlock + 1)]);
+            }
         }
     }
 }
@@ -263,6 +278,38 @@ int moveBlockOneRight() {
     return true;
 }
 
+bool newRandomBlock()
+{
+    srand(time(NULL));
+    int newBlockType = rand() % 7;
+
+    if (newBlockType == currentBlockType)
+    {
+        if (blockInARow > 0)
+        {
+            while (newBlockType != currentBlockType)
+            {
+                newBlockType = rand() % 7;
+                blockInARow = 0;
+            }
+        }
+        else
+        {
+            currentBlockType = newBlockType;
+            blockInARow++;
+        }
+    }
+    else
+    {
+        currentBlockType = newBlockType;
+        blockInARow = 0;
+    }
+
+    blockholded = false;
+
+    return newBlock();
+}
+
 bool newBlock() {   //returns false if collision
     int tmpField[X][Y];
     std::copy(&field[0][0], &field[0][0] + X * Y, &tmpField[0][0]);
@@ -283,11 +330,14 @@ bool newBlock() {   //returns false if collision
     }
     currentBlockPosX = X / 2;
     currentBlockPosY = 0;
+
     return true;
 }
 
+// change current block with the hold block
 void changeHoldBlock()
 {
+    if (blockholded) return;
     deleteBlock();
     
     if (holdBlock != -1)
@@ -295,31 +345,38 @@ void changeHoldBlock()
         int tempBlock = currentBlockType;
         currentBlockType = holdBlock;
         holdBlock = tempBlock;
+        blockholded = true;
+        newBlock();
     }
     else
     {
-        srand(time(NULL));
-        currentBlockType = rand() % 7;
+        holdBlock = currentBlockType;
+        newRandomBlock();
     }
-
-    newBlock();
 }
 
 // delete current block in the field
 void deleteBlock()
 {
+    printf("\n");
     for (int y = 0; y < 4; y++)
     {
         for (int x = 0; x < 4; x++)
         {
+            printf("%d,", field[currentBlockPosX + x][currentBlockPosY + y]);
             if (blockTypes[currentBlockType][currentBlockRotation][x][y] == 0) continue;
+           
 
-            field[currentBlockPosX + x][currentBlockPosY + y] = 0;
+
+            field[currentBlockPosX + y][currentBlockPosY + x] = 0;
         }
+        printf("\n");
     }
+    printf("\n");
 }
 
 void printFieldToConsole() {
+    return;
     for (int i = 0; i < Y; i++) {
         for (int j = 0; j < X; j++) {
             printf("%i", field[j][i]);
