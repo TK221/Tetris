@@ -9,7 +9,7 @@ SFML/Graphics.hpp
 ## Verwendete Versionen
 - Windows 10
 - Microsoft Visual Studio Community 2019 Version 16.8.4
-  - Sulution Platform: x64
+  - Solution Platform: x64
   - Platform: Win32
 - SFML 2.5.1
 
