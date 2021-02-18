@@ -32,9 +32,9 @@ int main()
 
     loadTextures();
     readBlocks();
-
     clearField();
-    
+    newBlock();
+
     Clock clock;
     float timer = 0, delay = 0.4f;
 
