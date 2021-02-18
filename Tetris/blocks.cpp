@@ -4,6 +4,8 @@
 #include "main.h"
 #include "field.h"
 
+//#define DEBUG_MODE
+
 using namespace std;
 
 void saveBlockTypes(int block[4][4], int type);
@@ -82,11 +84,17 @@ void saveBlockTypes(int block[4][4], int type)
 				{
 					blockTypes[type][i][x][y] = 0;
 				}
-				printf("%d,", blockTypes[type][i][x][y]);
+#ifdef DEBUG_MODE
+	printf("%d,", blockTypes[type][i][x][y]);
+#endif // DEBUG_MODE
 			}
-			printf("\n");
+#ifdef DEBUG_MODE
+	printf("\n");
+#endif // DEBUG_MODE
 		}
-		printf("\n");
+#ifdef DEBUG_MODE
+	printf("\n");
+#endif // DEBUG_MODE
 		
 		// copy array to temporary
 		int tempBlock[4][4];
@@ -109,7 +117,9 @@ void saveBlockTypes(int block[4][4], int type)
 			rY--;
 		}
 	}
+#ifdef DEBUG_MODE
 	printf("\n");
+#endif // DEBUG_MODE
 }
 
 // initialize new random block and create it (In Progress)
