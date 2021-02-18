@@ -1,6 +1,9 @@
 #include <SFML/Graphics.hpp>
 #include <string>
 #include "blocks.h"
+#include "main.h"
+#include "field.h"
+
 using namespace std;
 
 void saveBlockTypes(int block[4][4], int type);
@@ -8,8 +11,11 @@ void saveBlockTypes(int block[4][4], int type);
 // indexes where the real blocks of every type of block is
 int blockTypes[BLOCKNUMBER][4][4][4];
 
+bool blockholded = false;		// is block currently holded
+int blockInARow = 0;			// new same created block in a row
+int holdBlock = -1;				// blocktype which is currently holded
 
-// definition of normal block
+// definition of normal blocks
 int blockDef[BLOCKNUMBER][4][4] =
 {
 	0,1,0,0,
@@ -104,4 +110,99 @@ void saveBlockTypes(int block[4][4], int type)
 		}
 	}
 	printf("\n");
+}
+
+// initialize new random block and create it (In Progress)
+bool newRandomBlock()
+{
+	srand(time(NULL));
+	int newBlockType = rand() % 7;
+
+	if (newBlockType == currentBlockType)
+	{
+		if (blockInARow > 0)
+		{
+			while (newBlockType != currentBlockType)
+			{
+				newBlockType = rand() % 7;
+				blockInARow = 0;
+			}
+		}
+		else
+		{
+			currentBlockType = newBlockType;
+			blockInARow++;
+		}
+	}
+	else
+	{
+		currentBlockType = newBlockType;
+		blockInARow = 0;
+	}
+
+	blockholded = false;
+
+	return newBlock();
+}
+
+// create new block at the top of the field
+bool newBlock() {   //returns false if collision
+	int tmpField[X][Y];
+	std::copy(&field[0][0], &field[0][0] + X * Y, &tmpField[0][0]);
+	currentBlockRotation = 1;
+
+	for (int j = 0; j < 4; j++) {
+		for (int i = 0; i < 4; i++) {
+			if (blockTypes[currentBlockType][currentBlockRotation][i][j] != 0) {
+				if (field[j + (X / 2)][i] == 0) {
+					field[j + (X / 2)][i] = blockTypes[currentBlockType][currentBlockRotation][i][j];
+				}
+				else {
+					std::copy(&tmpField[0][0], &tmpField[0][0] + X * Y, &field[0][0]);
+					return false;
+				}
+			}
+		}
+	}
+	currentBlockPosX = X / 2;
+	currentBlockPosY = 0;
+
+	return true;
+}
+
+// delete current block in the field
+void deleteBlock()
+{
+	for (int y = 0; y < 4; y++)
+	{
+		for (int x = 0; x < 4; x++)
+		{
+			if (blockTypes[currentBlockType][currentBlockRotation][x][y] == 0) continue;
+
+			field[currentBlockPosX + y][currentBlockPosY + x] = 0;
+		}
+	}
+}
+
+// change current block with the hold block
+void changeHoldBlock()
+{
+	if (blockholded) return;
+	deleteBlock();
+
+	if (holdBlock != -1)
+	{
+		// if a block is holded change current with holded
+		int tempBlock = currentBlockType;
+		currentBlockType = holdBlock;
+		holdBlock = tempBlock;
+		blockholded = true;
+		newBlock();
+	}
+	else
+	{
+		// if no block is holded create a new random block and set holdblock
+		holdBlock = currentBlockType;
+		newRandomBlock();
+	}
 }

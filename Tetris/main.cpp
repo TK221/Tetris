@@ -2,35 +2,17 @@
 #include <stdlib.h> 
 #include <Windows.h>
 #include "blocks.h"
+#include "main.h"
+#include "field.h"
 
 using namespace sf;
 using namespace std;
-
-//variables
-const unsigned int XSCREEN = 610;
-const unsigned int YSCREEN = 640;
-const unsigned int X = 14;
-const unsigned int Y = 20;
-const unsigned int SquareSize = 32;
 
 //functions
 void loadTextures();
 void displayText(sf::RenderWindow* window);
 void gameOver();
-
-void addScore(int value);
-void printFieldToConsole();
 void drawField(sf::RenderWindow* window);
-bool newBlock();
-void clearField();
-int moveBlockOneDown();
-int moveBlockOneLeft();
-int moveBlockOneRight();
-void clearFullRows();
-bool rotateBlock();
-void deleteBlock();
-void changeHoldBlock();
-bool newRandomBlock();
 
 //variables
 Texture t1;
@@ -41,16 +23,6 @@ Text text;
 int score = 0;
 bool isGameOver = false;
 
-bool blockholded = false;
-int blockInARow = 0;
-
-int field[X][Y] = { 0 };
-int currentObjectPosition[4][2] = { 0 };    //[one of the 4 blocks of one "total block"][X and Y]
-int currentBlockType = 0;
-int currentBlockPosX;
-int currentBlockPosY;
-int currentBlockRotation = 0;
-int holdBlock = -1;
 
 int main()
 {
@@ -58,9 +30,6 @@ int main()
 
     loadTextures();
     readBlocks();
-
-    //Sprite tiles(t1);
-    //tiles.setTextureRect(IntRect(0, 0, SquareSize, SquareSize));
 
     //newBlock();
     printFieldToConsole();
@@ -178,7 +147,7 @@ int main()
 // draw the enitre field
 void drawField(sf::RenderWindow* window)
 {
-    // draw the gamfield with the current blocks
+    // draw gamefield with current blocks
     for (int y = 0; y < Y; y++)
     {
         for (int x = 0; x < X; x++)
@@ -207,179 +176,6 @@ void drawField(sf::RenderWindow* window)
             }
         }
     }
-}
-
-void clearField() {
-    for (int i = 0; i < Y; i++) {
-        for (int j = 0; j < X; j++) {
-            if (i == Y - 1 || j == 0 || j == X-1) {
-                field[j][i] = -1;
-            }
-            else {
-                field[j][i] = 0;
-            }
-        }
-    }
-}
-
-int moveBlockOneDown() {
-    int tmpField[X][Y];
-    std::copy(&field[0][0], &field[0][0] + X * Y, &tmpField[0][0]);
-    for (int i = 3; i >= 0; i--) {
-        for (int j = 3; j >= 0; j--) {
-            if (blockTypes[currentBlockType][currentBlockRotation][i][j] != 0) {
-                if (field[currentBlockPosX + j][currentBlockPosY + i + 1] == 0) {
-                    field[currentBlockPosX + j][currentBlockPosY + i + 1] = blockTypes[currentBlockType][currentBlockRotation][i][j];
-                    field[currentBlockPosX + j][currentBlockPosY + i] = 0;
-                }
-                else {
-                    std::copy(&tmpField[0][0], &tmpField[0][0] + X * Y, &field[0][0]);
-                    return false;
-                }
-            }
-        }
-    }
-    currentBlockPosY++;
-    return true;
-}
-
-int moveBlockOneLeft() {
-    int tmpField[X][Y];
-    std::copy(&field[0][0], &field[0][0] + X * Y, &tmpField[0][0]);
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 4; j++) {
-            if (blockTypes[currentBlockType][currentBlockRotation][i][j] != 0) {
-                if (field[currentBlockPosX + j - 1][currentBlockPosY + i] == 0) {
-                    field[currentBlockPosX + j - 1][currentBlockPosY + i] = blockTypes[currentBlockType][currentBlockRotation][i][j];
-                    field[currentBlockPosX + j][currentBlockPosY + i] = 0;
-                }
-                else {
-                    std::copy(&tmpField[0][0], &tmpField[0][0] + X * Y, &field[0][0]);
-                    return false;
-                }
-            }
-        }
-    }
-    currentBlockPosX--;
-    return true;
-}
-
-int moveBlockOneRight() {
-    int tmpField[X][Y];
-    std::copy(&field[0][0], &field[0][0] + X * Y, &tmpField[0][0]);
-    for (int i = 3; i >= 0; i--) {
-        for (int j = 3; j >= 0; j--) {
-            if (blockTypes[currentBlockType][currentBlockRotation][i][j] != 0) {
-                if (field[currentBlockPosX + j + 1][currentBlockPosY + i] == 0) {
-                    field[currentBlockPosX + j + 1][currentBlockPosY + i] = blockTypes[currentBlockType][currentBlockRotation][i][j];
-                    field[currentBlockPosX + j][currentBlockPosY + i] = 0;
-                }
-                else {
-                    std::copy(&tmpField[0][0], &tmpField[0][0] + X * Y, &field[0][0]);
-                    return false;
-                }
-            }
-        }
-    }
-    currentBlockPosX++;
-    return true;
-}
-
-bool newRandomBlock()
-{
-    srand(time(NULL));
-    int newBlockType = rand() % 7;
-
-    if (newBlockType == currentBlockType)
-    {
-        if (blockInARow > 0)
-        {
-            while (newBlockType != currentBlockType)
-            {
-                newBlockType = rand() % 7;
-                blockInARow = 0;
-            }
-        }
-        else
-        {
-            currentBlockType = newBlockType;
-            blockInARow++;
-        }
-    }
-    else
-    {
-        currentBlockType = newBlockType;
-        blockInARow = 0;
-    }
-
-    blockholded = false;
-
-    return newBlock();
-}
-
-bool newBlock() {   //returns false if collision
-    int tmpField[X][Y];
-    std::copy(&field[0][0], &field[0][0] + X * Y, &tmpField[0][0]);
-    currentBlockRotation = 1;
-    
-    for (int j = 0; j < 4; j++) {
-        for (int i = 0; i < 4; i++) {
-            if (blockTypes[currentBlockType][currentBlockRotation][i][j] != 0) {
-                if (field[j + (X / 2)][i] == 0) {
-                    field[j + (X / 2)][i] = blockTypes[currentBlockType][currentBlockRotation][i][j];
-                }
-                else {
-                    std::copy(&tmpField[0][0], &tmpField[0][0] + X * Y, &field[0][0]);
-                    return false;
-                }
-            }
-        }
-    }
-    currentBlockPosX = X / 2;
-    currentBlockPosY = 0;
-
-    return true;
-}
-
-// change current block with the hold block
-void changeHoldBlock()
-{
-    if (blockholded) return;
-    deleteBlock();
-    
-    if (holdBlock != -1)
-    {
-        int tempBlock = currentBlockType;
-        currentBlockType = holdBlock;
-        holdBlock = tempBlock;
-        blockholded = true;
-        newBlock();
-    }
-    else
-    {
-        holdBlock = currentBlockType;
-        newRandomBlock();
-    }
-}
-
-// delete current block in the field
-void deleteBlock()
-{
-    printf("\n");
-    for (int y = 0; y < 4; y++)
-    {
-        for (int x = 0; x < 4; x++)
-        {
-            printf("%d,", field[currentBlockPosX + x][currentBlockPosY + y]);
-            if (blockTypes[currentBlockType][currentBlockRotation][x][y] == 0) continue;
-           
-
-
-            field[currentBlockPosX + y][currentBlockPosY + x] = 0;
-        }
-        printf("\n");
-    }
-    printf("\n");
 }
 
 void printFieldToConsole() {
@@ -418,9 +214,10 @@ void loadTextures()
 
 void displayText(sf::RenderWindow *window)
 {
-    // define score text
+    // define text
     char str[25];
 
+    // print Score
     sprintf_s(str, "Score: %04d", score);
     text.setString(str);
     text.setCharacterSize(24);
@@ -428,7 +225,7 @@ void displayText(sf::RenderWindow *window)
     text.setPosition(460, 0);
     (*window).draw(text);
 
-    // game over text
+    // print GameOver text with current score
     if (isGameOver)
     {
         sprintf_s(str, "Game Over\nScore: %04d", score);
@@ -440,87 +237,13 @@ void displayText(sf::RenderWindow *window)
     }
 }
 
-void clearFullRows() {
-    for (int y = 1; y < Y-1; y++) {
-        for (int x = 1; x < X; x++) {
-            if (field[x][y] == 0) break;
-            else if (x == X - 1) {
-                printf("delete row");
-                addScore(100);
-                //delete this row and move everything above one down
-                for (int x2 = 1; x2 < X-1; x2++) {
-                    field[x2][y] = 0;
-                }
-                for (int y2 = y; y2>0; y2--) {
-                    for (int x2 = 1; x2 < X-1; x2++) {
-                        field[x2][y2] = field[x2][y2-1];
-                        field[x2][y2 - 1] = 0;
-                    }
-                }
-                currentBlockPosY++;
-                printFieldToConsole();
-                //newRandomBlock();
-            }
-        }
-    }
-}
-
-bool rotateBlock() {
-    printf("rotate start\n");
-    int tmpField[X][Y];
-    std::copy(&field[0][0], &field[0][0] + X * Y, &tmpField[0][0]);
-    printf("\ncurrent block %d\nrotate: %d\n", currentBlockType, currentBlockRotation);
-
-
-    for (int y = 0; y < 4; y++)
-    {
-        for (int x = 0; x < 4; x++)
-        {
-            printf("%d,", blockTypes[currentBlockType][currentBlockRotation][x][y]);
-            if (blockTypes[currentBlockType][currentBlockRotation][x][y] != 0) {
-                field[currentBlockPosX + y][currentBlockPosY + x] = 0;
-            }
-        }
-        printf("\n");
-    }
-    printf("\n");
-    if (currentBlockRotation < 3) {
-        currentBlockRotation++;
-    }
-    else currentBlockRotation = 0;
-    printf("rotate middle:\n");
-    printFieldToConsole();
-
-    for (int i = 3; i >= 0; i--) {
-        for (int j = 3; j >= 0; j--) {
-            if (blockTypes[currentBlockType][currentBlockRotation][i][j] != 0) {
-                if (field[currentBlockPosX + j][currentBlockPosY + i] == 0) {
-                    field[currentBlockPosX + j][currentBlockPosY + i] = blockTypes[currentBlockType][currentBlockRotation][i][j];
-                }
-                else {
-                    std::copy(&tmpField[0][0], &tmpField[0][0] + X * Y, &field[0][0]);
-                    printf("error rotate\n");
-                    if (currentBlockRotation > 0) {
-                        currentBlockRotation--;
-                    }
-                    else currentBlockRotation = 3;
-                    printf("rotate: %d", currentBlockRotation);
-                    return false;
-                }
-            }
-        }
-    }
-    
-    printf("rotate end:\n");
-    return true;
-}
-
 // add points to score
 void addScore(int value)
 {
     score += value;
 }
 
+// gameover function
 void gameOver()
 {
     isGameOver = true;
