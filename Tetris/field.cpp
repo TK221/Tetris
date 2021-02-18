@@ -5,6 +5,8 @@
 #include "main.h"
 #include "field.h"
 
+//#define DEBUG_MODE
+
 using namespace sf;
 using namespace std;
 
@@ -118,30 +120,32 @@ void clearFullRows() {
 }
 
 bool rotateBlock() {
+#ifdef DEBUG_MODE
     printf("rotate start\n");
+    printf("\ncurrent block %d\nrotate: %d\n", currentBlockType, currentBlockRotation);
+#endif // DEBUG_MODE
     int tmpField[X][Y];
     std::copy(&field[0][0], &field[0][0] + X * Y, &tmpField[0][0]);
-    printf("\ncurrent block %d\nrotate: %d\n", currentBlockType, currentBlockRotation);
 
 
     for (int y = 0; y < 4; y++)
     {
         for (int x = 0; x < 4; x++)
         {
-            printf("%d,", blockTypes[currentBlockType][currentBlockRotation][x][y]);
             if (blockTypes[currentBlockType][currentBlockRotation][x][y] != 0) {
                 field[currentBlockPosX + y][currentBlockPosY + x] = 0;
             }
         }
-        printf("\n");
     }
-    printf("\n");
     if (currentBlockRotation < 3) {
         currentBlockRotation++;
     }
     else currentBlockRotation = 0;
+
+#ifdef DEBUG_MODE
     printf("rotate middle:\n");
     printFieldToConsole();
+#endif // DEBUG_MODE
 
     for (int i = 3; i >= 0; i--) {
         for (int j = 3; j >= 0; j--) {
@@ -151,18 +155,20 @@ bool rotateBlock() {
                 }
                 else {
                     std::copy(&tmpField[0][0], &tmpField[0][0] + X * Y, &field[0][0]);
-                    printf("error rotate\n");
+#ifdef DEBUG_MODE
+    printf("error rotate\n");
+#endif // DEBUG_MODE
                     if (currentBlockRotation > 0) {
                         currentBlockRotation--;
                     }
                     else currentBlockRotation = 3;
-                    printf("rotate: %d", currentBlockRotation);
                     return false;
                 }
             }
         }
     }
-
+#ifdef DEBUG_MODE
     printf("rotate end:\n");
+#endif // DEBUG_MODE
     return true;
 }

@@ -5,6 +5,8 @@
 #include "main.h"
 #include "field.h"
 
+//#define DEBUG_MODE
+
 using namespace sf;
 using namespace std;
 
@@ -31,8 +33,6 @@ int main()
     loadTextures();
     readBlocks();
 
-    //newBlock();
-    printFieldToConsole();
     clearField();
     
     Clock clock;
@@ -52,7 +52,6 @@ int main()
 
             // key pressed
             case sf::Event::KeyPressed:
-                printf("keypressed");
                 switch (event.key.code)
                 {
                 case sf::Keyboard::Left:
@@ -124,13 +123,13 @@ int main()
                     gameOver();
                 }
 
-                moveBlockOneRight();
-                //moveBlockOneLeft();
-                printFieldToConsole();
             }
             clearFullRows();
-            printFieldToConsole();
 
+#ifdef DEBUG_MODE
+    printFieldToConsole();
+#endif // DEBUG_MODE
+    
             timer = 0;
         }
         
@@ -179,7 +178,6 @@ void drawField(sf::RenderWindow* window)
 }
 
 void printFieldToConsole() {
-    return;
     for (int i = 0; i < Y; i++) {
         for (int j = 0; j < X; j++) {
             printf("%i", field[j][i]);
@@ -187,6 +185,7 @@ void printFieldToConsole() {
         printf("\n");
     }
     printf("============\n");
+    return;
 }
 
 void loadTextures()
