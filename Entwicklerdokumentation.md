@@ -8,7 +8,7 @@ SFML/Graphics.hpp
 
 ## Verwendete Versionen
 - Windows 10
-- Microsoft Visual Studio Community 2019 Version 16.8.4
+- Microsoft Visual Studio Community 2019 Version 16.8.4 (Win32 x64)
 - SFML 2.5.1
 
 
