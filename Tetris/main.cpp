@@ -52,57 +52,66 @@ int main()
 
             // key pressed
             case sf::Event::KeyPressed:
-                switch (event.key.code)
-                {
-                case sf::Keyboard::Left:
-                {
-                    moveBlockOneLeft();
-                    break;
+                if (!isGameOver){
+                    switch (event.key.code)
+                    {
+                    case sf::Keyboard::Left:
+                    {
+                        moveBlockOneLeft();
+                        break;
+                    }
+                    case sf::Keyboard::Right:
+                    {
+                        moveBlockOneRight();
+                        break;
+                    }
+                    case sf::Keyboard::Down:
+                    {
+                        while (moveBlockOneDown()) {}
+                        break;
+                    }
+                    case sf::Keyboard::Up:
+                    {
+                        rotateBlock();
+                        break;
+                    }
+                    case sf::Keyboard::A:
+                    {
+                        moveBlockOneLeft();
+                        break;
+                    }
+                    case sf::Keyboard::D:
+                    {
+                        moveBlockOneRight();
+                        break;
+                    }
+                    case sf::Keyboard::S:
+                    {
+                        while (moveBlockOneDown()) {}
+                        break;
+                    }
+                    case sf::Keyboard::W:
+                    {
+                        rotateBlock();
+                        break;
+                    }
+                    case sf::Keyboard::Space:
+                    {
+                        changeHoldBlock();
+                        break;
+                    }
+                    default:
+                        break;
+                    } 
                 }
-                case sf::Keyboard::Right:
-                {
-                    moveBlockOneRight();
-                    break;
+                else {
+                    if (event.key.code == sf::Keyboard::R) {
+                        clearField();
+                        newBlock();
+                        score = 0;
+                        isGameOver = false;
+                    }
                 }
-                case sf::Keyboard::Down:
-                {
-                    while (moveBlockOneDown()) {}
-                    break;
-                }
-                case sf::Keyboard::Up:
-                {
-                    rotateBlock();
-                    break;
-                }
-                case sf::Keyboard::A:
-                {
-                    moveBlockOneLeft();
-                    break;
-                }
-                case sf::Keyboard::D:
-                {
-                    moveBlockOneRight();
-                    break;
-                }
-                case sf::Keyboard::S:
-                {
-                    while (moveBlockOneDown()) {}
-                    break;
-                }
-                case sf::Keyboard::W:
-                {
-                    rotateBlock();
-                    break;
-                }
-                case sf::Keyboard::Space:
-                {
-                    changeHoldBlock();
-                    break;
-                }
-                default:
-                    break;
-                } 
-
                 break;
 
             default:
