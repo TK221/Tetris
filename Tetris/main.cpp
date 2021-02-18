@@ -29,6 +29,7 @@ bool isGameOver = false;
 int main()
 {
     sf::RenderWindow window(sf::VideoMode(XSCREEN, YSCREEN), "Tetris");
+    printf("####### ####### ####### ######  ###  #####  \n    #    #          #    #     #  #  #     # \n    #    #          #    #     #  #  #       \n    #    #####      #    ######   #   #####  \n    #    #          #    #   #    #        # \n    #    #          #    #    #   #  #     # \n    #    #######    #    #     # ###  #####\n");
 
     loadTextures();
     readBlocks();
