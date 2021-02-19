@@ -22,7 +22,7 @@ Sprite blockTiles[9];
 Font font;
 Text text;
 
-unsigned int clockTimer = 0;
+float clockTimer = 0;
 int score = 0;
 bool isGameOver = false;
 bool isPaused = false;
@@ -118,6 +118,7 @@ int main()
                         newRandomBlock();
                         score = 0;
                         isGameOver = false;
+                        clockTimer = 0;
                     }
                 }
                 break;
@@ -133,21 +134,26 @@ int main()
         clock.restart();
         timer += Ftime;
         
-        if (!isGameOver && !isPaused && timer > delay)
+        if (!isGameOver && !isPaused)
         {
-            if (!moveBlockOneDown()) {
-                if (!newRandomBlock()) {
-                    gameOver();
-                }
+            clockTimer += Ftime;
 
-            }
-            clearFullRows();
+            if (timer > delay)
+            {
+                if (!moveBlockOneDown()) {
+                    if (!newRandomBlock()) {
+                        gameOver();
+                    }
+
+                }
+                clearFullRows();
 
 #ifdef DEBUG_MODE
-    printFieldToConsole();
+                printFieldToConsole();
 #endif // DEBUG_MODE
-    
-            timer = 0;
+
+                timer = 0;
+            }
         }
         
 
@@ -239,6 +245,14 @@ void displayText(sf::RenderWindow *window)
     text.setCharacterSize(24);
     text.setFillColor(Color::White);
     text.setPosition(460, 0);
+    (*window).draw(text);
+
+    int minutes = clockTimer / 60;
+    int seconds = (int) clockTimer % 60;
+    sprintf_s(str, "%02d:%02d", minutes, seconds);
+    text.setString(str);
+    text.setCharacterSize(27);
+    text.setPosition(460, 30);
     (*window).draw(text);
 
     // print GameOver text with current score

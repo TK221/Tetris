@@ -99,7 +99,7 @@ void clearFullRows() {
         for (int x = 1; x < X; x++) {
             if (field[x][y] == 0) break;
             else if (x == X - 1) {
-                addScore(100);
+                addScore(10);
                 //delete this row and move everything above one down
                 for (int x2 = 1; x2 < X - 1; x2++) {
                     field[x2][y] = 0;
