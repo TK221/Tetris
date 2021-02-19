@@ -6,17 +6,20 @@ Tetris umgesetzt mithilfe der SFML Libary
 
 - Spielfeld aus einzelnen Blöcken
 - Score-Anzeige
+- Momentane Zeit
 - Sieben spielbare Blöcke (J,L,T,O,S,Z,I)
 - Block Bewegung mit den Pfeiltasten Links und Rechts
 - Block rotierung mithilfe der Pfeiltaste-Oben
 - Sofortiges setzen eines Blocke mit Pfeiltaste-Unten
 - Halten eines Blockes mit der Leertaste
+- Neustarten des Spiels mit der Taste R
+- Pausieren des Spiels mit der Taste P
 
 ## Tech
 
 Das Projekt benutzt einige Technische Systeme:
 
-- [SFML] - SMFL Ist eine Libary zur Vereinfachung von Game-Programming
+- [SFML] - SFML Ist eine Libary zur Vereinfachung von Game-Programming
 - [VS] - Visual Studio zur Erstellung des Projektes
 
 
