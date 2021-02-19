@@ -26,7 +26,9 @@ Das Projekt benutzt einige Technische Systeme:
 ## Installation
 
 Das Projekt benötigt einige Biblitheken die im Repository mitgegeben werden.
-Das Spiel ist zurzeit nur auf Windows verfügbar
+Das Spiel ist zurzeit nur auf Windows verfügbar.
+
+Das Spiel benötigt keine weiteren Installationen sondern kann im dafür vorgesehenen Ordner gestartet werden.
 
 
    [SFML]: <https://www.sfml-dev.org/>
