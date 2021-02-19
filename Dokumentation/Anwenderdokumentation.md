@@ -1,6 +1,6 @@
 # Anwenderdokumentation
 ## _Tetris auf [Github]_
-Tetris umgesetzt mithilfe der SFML Libary
+Tetris umgesetzt mithilfe der SFML Library
 
 ## Features
 
@@ -20,7 +20,7 @@ Tetris umgesetzt mithilfe der SFML Libary
 Das Projekt benutzt einige Technische Systeme:
 
 - [SFML] - SFML Ist eine Libary zur Vereinfachung von Game-Programming
-- [VS] - Visual Studio zur Erstellung des Projektes
+- [VS] - Das Projekt wurde mit Visual Studio erstellt
 
 
 ## Installation
@@ -28,7 +28,7 @@ Das Projekt benutzt einige Technische Systeme:
 Das Projekt benötigt einige Biblitheken die im Repository mitgegeben werden.
 Das Spiel ist zurzeit nur auf Windows verfügbar.
 
-Das Spiel benötigt keine weiteren Installationen sondern kann im dafür vorgesehenen Ordner gestartet werden.
+Zum starten benötigt es keine weiteren Installationen sondern kann im dafür vorhergesehenen Ordner gestartet werden.
 
 
    [SFML]: <https://www.sfml-dev.org/>
