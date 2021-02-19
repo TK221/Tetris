@@ -22,8 +22,10 @@ Sprite blockTiles[9];
 Font font;
 Text text;
 
+unsigned int clockTimer = 0;
 int score = 0;
 bool isGameOver = false;
+bool isPaused = false;
 
 
 int main()
@@ -53,7 +55,12 @@ int main()
 
             // key pressed
             case sf::Event::KeyPressed:
-                if (!isGameOver){
+                if (event.key.code == sf::Keyboard::P)
+                {
+                    isPaused = !isPaused;
+                }
+                if (!isGameOver && !isPaused)
+                {
                     switch (event.key.code)
                     {
                     case sf::Keyboard::Left:
@@ -108,7 +115,7 @@ int main()
                 else {
                     if (event.key.code == sf::Keyboard::R) {
                         clearField();
-                        newBlock();
+                        newRandomBlock();
                         score = 0;
                         isGameOver = false;
                     }
@@ -125,8 +132,8 @@ int main()
         float Ftime = clock.getElapsedTime().asSeconds();
         clock.restart();
         timer += Ftime;
-
-        if (!isGameOver && timer > delay)
+        
+        if (!isGameOver && !isPaused && timer > delay)
         {
             if (!moveBlockOneDown()) {
                 if (!newRandomBlock()) {
@@ -242,6 +249,14 @@ void displayText(sf::RenderWindow *window)
         text.setCharacterSize(60);
         text.setFillColor(Color::Red);
         text.setPosition(XSCREEN/4, YSCREEN/4);
+        (*window).draw(text);
+    }
+    else if (isPaused)
+    {
+        text.setString("Paused");
+        text.setCharacterSize(60);
+        text.setFillColor(Color::Blue);
+        text.setPosition(XSCREEN / 4, YSCREEN / 4);
         (*window).draw(text);
     }
 }

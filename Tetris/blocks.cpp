@@ -8,6 +8,8 @@
 
 using namespace std;
 
+const int MAXBLOCKSINAROW = 1;
+
 void saveBlockTypes(int block[4][4], int type);
 
 // indexes where the real blocks of every type of block is
@@ -126,30 +128,31 @@ void saveBlockTypes(int block[4][4], int type)
 bool newRandomBlock()
 {
 	srand(time(NULL));
-	int newBlockType = rand() % 7;
+	int seed = rand();
+	int newBlockType = seed % 7;
 
 	if (newBlockType == currentBlockType)
 	{
-		if (blockInARow > 0)
+		if (blockInARow >= MAXBLOCKSINAROW)
 		{
-			while (newBlockType != currentBlockType)
+			while (newBlockType == currentBlockType)
 			{
-				newBlockType = rand() % 7;
-				blockInARow = 0;
+				seed++;
+				newBlockType = seed % 7;
 			}
+			blockInARow = 1;
 		}
 		else
 		{
-			currentBlockType = newBlockType;
 			blockInARow++;
 		}
 	}
 	else
 	{
-		currentBlockType = newBlockType;
-		blockInARow = 0;
+		blockInARow = 1;
 	}
 
+	currentBlockType = newBlockType;
 	blockholded = false;
 
 	return newBlock();
