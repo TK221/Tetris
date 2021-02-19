@@ -13,6 +13,13 @@ SFML/Graphics.hpp
   - Platform: Win32
 - SFML 2.5.1
 
+## Struktur
+| Datei        | Funktion           |
+| ------------- | ------------- | 
+| Tetris\main.cpp      | Nutzereingaben, Visualisierung | 
+| Tetris\field.cpp      | Funktionen rund um das Spielfeld und das Bewegen der Blöcke | 
+| Tetris\blocks.cpp | Generation neuer Blöcke sowie die Zwischenablage eines Blockes |
+| Assets\Tiles.png | Bereithaltung der Blockdesigns |
 
 ## PAP
 ![Image of PAP](https://raw.githubusercontent.com/TK221/Tetris/Dokumentation/Dokumentation/PAP.png)
