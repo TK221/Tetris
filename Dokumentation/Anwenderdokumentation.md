@@ -9,7 +9,7 @@ Tetris umgesetzt mithilfe der SFML Libary
 - Momentane Zeit
 - Sieben spielbare Blöcke (J,L,T,O,S,Z,I)
 - Block Bewegung mit den Pfeiltasten Links und Rechts
-- Block rotierung mithilfe der Pfeiltaste-Oben
+- Block Rotierung mithilfe der Pfeiltaste-Oben
 - Sofortiges setzen eines Blocke mit Pfeiltaste-Unten
 - Halten eines Blockes mit der Leertaste
 - Neustarten des Spiels mit der Taste R
