@@ -95,11 +95,12 @@ int moveBlockOneRight() {
 }
 
 void clearFullRows() {
+    int lines = 0;
     for (int y = 1; y < Y - 1; y++) {
         for (int x = 1; x < X; x++) {
             if (field[x][y] == 0) break;
             else if (x == X - 1) {
-                addScore(10);
+                lines++;
                 //delete this row and move everything above one down
                 for (int x2 = 1; x2 < X - 1; x2++) {
                     field[x2][y] = 0;
@@ -112,12 +113,15 @@ void clearFullRows() {
                 }
                 currentBlockPosY++;
 #ifdef DEBUG_MODE
-    printf("delete row");
+    printf("delete row, lines: %d", lines);
     printFieldToConsole();
+
 #endif // DEBUG_MODE
             }
         }
     }
+    if (lines == 4) addScore(50);
+    else addScore(10 * lines);
 }
 
 bool rotateBlock() {

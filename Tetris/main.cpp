@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include <stdlib.h> 
 #include <Windows.h>
 #include "blocks.h"
@@ -32,6 +33,12 @@ int main()
 {
     sf::RenderWindow window(sf::VideoMode(XSCREEN, YSCREEN), "Tetris");
     printf("####### ####### ####### ######  ###  #####  \n    #    #          #    #     #  #  #     # \n    #    #          #    #     #  #  #       \n    #    #####      #    ######   #   #####  \n    #    #          #    #   #    #        # \n    #    #          #    #    #   #  #     # \n    #    #######    #    #     # ###  #####\n");
+
+    sf::Music music;
+    if (!music.openFromFile("../Assets/Tetris.ogg"))
+        return -1; // error
+    music.setLoop(true);
+    music.play();
 
     loadTextures();
     readBlocks();
